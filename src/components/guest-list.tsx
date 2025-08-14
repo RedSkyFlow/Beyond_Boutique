@@ -93,10 +93,18 @@ export function GuestList({
                 <AvatarImage src={guest.avatarUrl} alt={guest.name} data-ai-hint="person" />
                 <AvatarFallback>{getInitials(guest.name)}</AvatarFallback>
               </Avatar>
-              <div>
-                <p className="font-semibold">{guest.name}</p>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold">{guest.name}</p>
+                </div>
                 <p className="text-sm text-muted-foreground">{guest.email}</p>
               </div>
+               <div className={cn(
+                  'w-2.5 h-2.5 rounded-full',
+                  guest.isCheckedIn ? 'bg-green-500' : 'bg-gray-400'
+                )}
+                title={guest.isCheckedIn ? 'Checked In' : 'Checked Out'}
+               />
             </button>
           ))}
         </div>
