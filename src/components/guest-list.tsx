@@ -7,7 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Search, SlidersHorizontal, Hotel as HotelIcon, BedDouble, Users } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Badge } from '@/components/ui/badge';
 
 interface GuestListProps {
   guests: Guest[];
@@ -18,12 +18,13 @@ interface GuestListProps {
   onFilterChange: (filterName: string, value: string) => void;
 }
 
-const statusConfig: Record<GuestStatus, { label: string; color: string; }> = {
-  'checked-in': { label: 'Checked In', color: 'bg-green-500' },
-  'checked-out': { label: 'Checked Out', color: 'bg-gray-400' },
-  'due-today': { label: 'Due Today', color: 'bg-blue-500' },
-  'upcoming': { label: 'Upcoming', color: 'bg-yellow-500' },
+const statusConfig: Record<GuestStatus, { label: string; className: string; }> = {
+  'checked-in': { label: 'Checked In', className: 'bg-green-100 text-green-800' },
+  'checked-out': { label: 'Checked Out', className: 'bg-gray-100 text-gray-800' },
+  'due-today': { label: 'Due Today', className: 'bg-blue-100 text-blue-800' },
+  'upcoming': { label: 'Upcoming', className: 'bg-yellow-100 text-yellow-800' },
 };
+
 
 export function GuestList({
   guests,
@@ -87,9 +88,9 @@ export function GuestList({
       </div>
       <ScrollArea className="flex-1">
         <div className="p-2">
-          <TooltipProvider>
             {guests.map((guest) => {
               const latestStay = guest.stayHistory[guest.stayHistory.length - 1];
+              const guestStatus = statusConfig[guest.status];
               return (
               <button
                 key={guest.id}
@@ -108,18 +109,9 @@ export function GuestList({
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <p className="font-semibold">{guest.name}</p>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className={cn(
-                              'w-2.5 h-2.5 rounded-full',
-                              statusConfig[guest.status].color
-                            )}
-                          />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{statusConfig[guest.status].label}</p>
-                        </TooltipContent>
-                      </Tooltip>
+                    <Badge className={cn('px-2 py-0.5 text-xs font-medium', guestStatus.className)}>
+                      {guestStatus.label}
+                    </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">{guest.email}</p>
                   <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
@@ -139,7 +131,6 @@ export function GuestList({
                 </div>
               </button>
             )})}
-          </TooltipProvider>
         </div>
       </ScrollArea>
     </div>
