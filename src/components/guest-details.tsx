@@ -1,4 +1,4 @@
-import type { Guest } from '@/types';
+import type { Guest, GuestStatus } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +12,14 @@ interface GuestDetailsProps {
   onPreferencesChange: (guestId: string, newPreferences: string) => void;
 }
 
+const statusConfig: Record<GuestStatus, { label: string; color: string; }> = {
+  'checked-in': { label: 'Checked In', color: 'bg-green-500 text-white' },
+  'checked-out': { label: 'Checked Out', color: 'bg-gray-500 text-white' },
+  'due-today': { label: 'Due Today', color: 'bg-blue-500 text-white' },
+  'upcoming': { label: 'Upcoming', color: 'bg-yellow-500 text-black' },
+};
+
+
 export function GuestDetails({ guest, onPreferencesChange }: GuestDetailsProps) {
   const getInitials = (name: string) => {
     const names = name.split(' ');
@@ -20,6 +28,8 @@ export function GuestDetails({ guest, onPreferencesChange }: GuestDetailsProps) 
     }
     return names[0][0];
   };
+
+  const currentStatus = statusConfig[guest.status];
 
   return (
     <Card className="h-full overflow-y-auto">
@@ -32,8 +42,8 @@ export function GuestDetails({ guest, onPreferencesChange }: GuestDetailsProps) 
           <div className="flex-1">
             <div className="flex items-center gap-4">
               <CardTitle className="font-headline text-3xl">{guest.name}</CardTitle>
-              <Badge variant={guest.isCheckedIn ? 'default' : 'secondary'} className="bg-primary/80 text-primary-foreground">
-                {guest.isCheckedIn ? 'Checked In' : 'Checked Out'}
+              <Badge className={currentStatus.color}>
+                {currentStatus.label}
               </Badge>
             </div>
             <div className="flex items-center text-sm text-muted-foreground mt-2 gap-6">

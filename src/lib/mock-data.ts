@@ -1,4 +1,7 @@
 import type { Guest, Hotel } from '@/types';
+import { add, format } from 'date-fns';
+
+const today = new Date();
 
 export const hotels: Hotel[] = [
   { id: 'hotel-1', name: 'The Lavender Bloom' },
@@ -13,7 +16,7 @@ export const guests: Guest[] = [
     email: 'eleanor.v@example.com',
     phone: '555-0101',
     hotelId: 'hotel-1',
-    isCheckedIn: true,
+    status: 'checked-in',
     totalStays: 3,
     avatarUrl: 'https://placehold.co/100x100.png',
     stayHistory: [
@@ -29,7 +32,7 @@ export const guests: Guest[] = [
     email: 'm.thorne@example.com',
     phone: '555-0102',
     hotelId: 'hotel-1',
-    isCheckedIn: false,
+    status: 'checked-out',
     totalStays: 1,
     avatarUrl: 'https://placehold.co/100x100.png',
     stayHistory: [
@@ -43,7 +46,7 @@ export const guests: Guest[] = [
     email: 'seraphina.d@example.com',
     phone: '555-0103',
     hotelId: 'hotel-2',
-    isCheckedIn: true,
+    status: 'due-today',
     totalStays: 5,
     avatarUrl: 'https://placehold.co/100x100.png',
     stayHistory: [
@@ -51,7 +54,7 @@ export const guests: Guest[] = [
       { id: 'stay-3-2', checkInDate: '2023-01-10', checkOutDate: '2023-01-15', roomType: 'Junior Suite', notes: 'Winter getaway.' },
       { id: 'stay-3-3', checkInDate: '2023-06-19', checkOutDate: '2023-06-26', roomType: 'Penthouse', notes: 'Booked the usual room.' },
       { id: 'stay-3-4', checkInDate: '2023-11-05', checkOutDate: '2023-11-10', roomType: 'Junior Suite', notes: 'Attended a local festival.' },
-      { id: 'stay-3-5', checkInDate: '2024-06-21', checkOutDate: '2024-06-28', roomType: 'Penthouse', notes: 'Regular summer stay. Inquired about private dining.' },
+      { id: 'stay-3-5', checkInDate: format(today, 'yyyy-MM-dd'), checkOutDate: format(add(today, {days: 7}), 'yyyy-MM-dd'), roomType: 'Penthouse', notes: 'Regular summer stay. Inquired about private dining.' },
     ],
     preferences: 'Always requests the Penthouse suite for summer stays. Prefers champagne on arrival. Requires daily newspaper delivery (The Times).',
   },
@@ -61,7 +64,7 @@ export const guests: Guest[] = [
     email: 'j.croft@example.com',
     phone: '555-0104',
     hotelId: 'hotel-2',
-    isCheckedIn: false,
+    status: 'checked-out',
     totalStays: 2,
     avatarUrl: 'https://placehold.co/100x100.png',
     stayHistory: [
@@ -76,11 +79,11 @@ export const guests: Guest[] = [
     email: 'isabella.r@example.com',
     phone: '555-0105',
     hotelId: 'hotel-3',
-    isCheckedIn: true,
+    status: 'upcoming',
     totalStays: 1,
     avatarUrl: 'https://placehold.co/100x100.png',
     stayHistory: [
-        { id: 'stay-5-1', checkInDate: '2024-06-30', checkOutDate: '2024-07-05', roomType: 'Luxury Villa', notes: 'Honeymoon trip. Booked several couples activities.' },
+        { id: 'stay-5-1', checkInDate: format(add(today, {days: 3}), 'yyyy-MM-dd'), checkOutDate: format(add(today, {days: 8}), 'yyyy-MM-dd'), roomType: 'Luxury Villa', notes: 'Honeymoon trip. Booked several couples activities.' },
     ],
     preferences: 'Vegan diet. Enjoys yoga and wellness activities.',
   },

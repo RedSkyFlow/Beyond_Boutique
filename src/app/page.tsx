@@ -33,9 +33,7 @@ export default function Home() {
       const searchMatch = guest.name.toLowerCase().includes(filters.search.toLowerCase()) ||
                           guest.email.toLowerCase().includes(filters.search.toLowerCase());
       const hotelMatch = filters.hotelId === 'all' || guest.hotelId === filters.hotelId;
-      const statusMatch = filters.status === 'all' ||
-                          (filters.status === 'checked-in' && guest.isCheckedIn) ||
-                          (filters.status === 'checked-out' && !guest.isCheckedIn);
+      const statusMatch = filters.status === 'all' || guest.status === filters.status;
       return searchMatch && hotelMatch && statusMatch;
     });
   }, [allGuests, filters]);

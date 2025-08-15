@@ -1,12 +1,13 @@
 'use client';
 
-import type { Guest, Hotel } from '@/types';
+import type { Guest, Hotel, GuestStatus } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Search, SlidersHorizontal, Hotel as HotelIcon } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 interface GuestListProps {
   guests: Guest[];
@@ -16,6 +17,13 @@ interface GuestListProps {
   filters: { search: string; hotelId: string; status: string };
   onFilterChange: (filterName: string, value: string) => void;
 }
+
+const statusConfig: Record<GuestStatus, { label: string; color: string; }> = {
+  'checked-in': { label: 'Checked In', color: 'bg-green-500' },
+  'checked-out': { label: 'Checked Out', color: 'bg-gray-400' },
+  'due-today': { label: 'Due Today', color: 'bg-blue-500' },
+  'upcoming': { label: 'Upcoming', color: 'bg-yellow-500' },
+};
 
 export function GuestList({
   guests,
@@ -70,43 +78,52 @@ export function GuestList({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="checked-in">Checked In</SelectItem>
-              <SelectItem value="checked-out">Checked Out</SelectItem>
+              {Object.entries(statusConfig).map(([status, config]) => (
+                <SelectItem key={status} value={status}>{config.label}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
       </div>
       <ScrollArea className="flex-1">
         <div className="p-2">
-          {guests.map((guest) => (
-            <button
-              key={guest.id}
-              onClick={() => onSelectGuest(guest.id)}
-              className={cn(
-                'w-full text-left p-3 rounded-lg flex items-center gap-4 transition-colors',
-                selectedGuestId === guest.id
-                  ? 'bg-secondary'
-                  : 'hover:bg-secondary/50'
-              )}
-            >
-              <Avatar className="w-10 h-10 border">
-                <AvatarImage src={guest.avatarUrl} alt={guest.name} data-ai-hint="person" />
-                <AvatarFallback>{getInitials(guest.name)}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="font-semibold">{guest.name}</p>
-                </div>
-                <p className="text-sm text-muted-foreground">{guest.email}</p>
-              </div>
-               <div className={cn(
-                  'w-2.5 h-2.5 rounded-full',
-                  guest.isCheckedIn ? 'bg-green-500' : 'bg-gray-400'
+          <TooltipProvider>
+            {guests.map((guest) => (
+              <button
+                key={guest.id}
+                onClick={() => onSelectGuest(guest.id)}
+                className={cn(
+                  'w-full text-left p-3 rounded-lg flex items-center gap-4 transition-colors',
+                  selectedGuestId === guest.id
+                    ? 'bg-secondary'
+                    : 'hover:bg-secondary/50'
                 )}
-                title={guest.isCheckedIn ? 'Checked In' : 'Checked Out'}
-               />
-            </button>
-          ))}
+              >
+                <Avatar className="w-10 h-10 border">
+                  <AvatarImage src={guest.avatarUrl} alt={guest.name} data-ai-hint="person" />
+                  <AvatarFallback>{getInitials(guest.name)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold">{guest.name}</p>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{guest.email}</p>
+                </div>
+                 <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className={cn(
+                          'w-2.5 h-2.5 rounded-full',
+                          statusConfig[guest.status].color
+                        )}
+                       />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{statusConfig[guest.status].label}</p>
+                    </TooltipContent>
+                  </Tooltip>
+              </button>
+            ))}
+          </TooltipProvider>
         </div>
       </ScrollArea>
     </div>

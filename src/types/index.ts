@@ -6,13 +6,15 @@ export interface Stay {
   notes: string;
 }
 
+export type GuestStatus = 'checked-in' | 'checked-out' | 'due-today' | 'upcoming';
+
 export interface Guest {
   id: string;
   name: string;
   email: string;
   phone: string;
   hotelId: string;
-  isCheckedIn: boolean;
+  status: GuestStatus;
   totalStays: number;
   stayHistory: Stay[];
   preferences: string;
