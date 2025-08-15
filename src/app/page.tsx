@@ -183,7 +183,7 @@ export default function Home() {
   return (
     <>
       <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
-        <div className="flex-1 grid grid-cols-[350px_1fr] min-h-0">
+        <div className="flex flex-1 overflow-hidden">
           <GuestList
             guests={filteredGuests}
             selectedGuestId={selectedGuestId}
@@ -194,7 +194,7 @@ export default function Home() {
             onStartTour={() => setIsTourOpen(true)}
             onImportClick={() => setIsImportOpen(true)}
           />
-          <ScrollArea className="bg-background" id="guest-details-panel">
+          <ScrollArea className="bg-background flex-1" id="guest-details-panel">
             <div className="p-4">
               {selectedGuest ? (
                 <GuestDetails guest={selectedGuest} />
