@@ -17,8 +17,8 @@ const hotels = [
 ];
 
 export default function Home() {
-  const [allGuests, setAllGuests] = useState<Guest[]>(initialGuests);
-  const [selectedGuestId, setSelectedGuestId] = useState<string | null>(initialGuests[0]?.id || null);
+  const [allGuests, setAllGuests] = useState<Guest[]>(() => initialGuests());
+  const [selectedGuestId, setSelectedGuestId] = useState<string | null>(allGuests[0]?.id || null);
   const [filters, setFilters] = useState({
     search: '',
     status: 'all',
