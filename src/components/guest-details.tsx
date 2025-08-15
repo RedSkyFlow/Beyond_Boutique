@@ -243,7 +243,7 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
             {guest.totalStays > 0 && (
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4 text-primary" />
-                <span>{guest.totalStays}{guest.totalStays === 1 ? 'st' : guest.totalStays === 2 ? 'nd' : guest.totalStays === 3 ? 'rd' : 'th'} Stay</span>
+                <span>{guest.totalStays} {guest.totalStays === 1 ? 'Stay' : 'Stays'}</span>
               </div>
             )}
             <div className="flex items-center gap-2">
@@ -291,5 +291,3 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
     </div>
   );
 }
-
-    

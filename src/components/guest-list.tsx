@@ -167,8 +167,8 @@ export function GuestList({
                     <p className="font-semibold">{guest.name}</p>
                      <TooltipProvider>
                       <Tooltip>
-                        <TooltipTrigger asChild onClick={(e) => e.stopPropagation()}>
-                          <span className="flex items-center">
+                        <TooltipTrigger asChild>
+                          <span className="flex items-center" onClick={(e) => e.stopPropagation()}>
                             <SourceIcon className="h-3.5 w-3.5 text-muted-foreground" />
                           </span>
                         </TooltipTrigger>
@@ -188,9 +188,9 @@ export function GuestList({
                       <BedDouble className="h-3.5 w-3.5" />
                       <span>Room {latestStay.roomNumber}</span>
                     </div>
-                    <div className='flex items-center gap-1.5'>
+                     <div className='flex items-center gap-1.5'>
                       <User className="h-3.5 w-3.5" />
-                      <span>{guest.totalStays}{guest.totalStays === 1 ? 'st' : guest.totalStays === 2 ? 'nd' : 'rd'} Stay</span>
+                      <span>{guest.totalStays} {guest.totalStays === 1 ? 'Stay' : 'Stays'}</span>
                     </div>
                   </div>
                 )}

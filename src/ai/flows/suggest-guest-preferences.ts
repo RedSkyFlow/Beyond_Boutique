@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -33,8 +34,11 @@ const prompt = ai.definePrompt({
   name: 'suggestGuestPreferencesPrompt',
   input: {schema: SuggestGuestPreferencesInputSchema},
   output: {schema: SuggestGuestPreferencesOutputSchema},
-  prompt: `You are an AI assistant that analyzes guest history and suggests potential preferences or perks to enhance their stay.
-  Consider the following guest history:
+  prompt: `You are an AI assistant for a luxury hotel group that analyzes guest history and suggests potential preferences or perks to enhance their stay.
+  
+  IMPORTANT: A "New Guest" with "Total Stays: 1" is a first-time guest currently on their first stay. Do NOT suggest "welcome back" amenities for them. Suggest "welcome" amenities instead. A "Returning Guest" has stayed before.
+
+  Analyze the following guest history:
   {{{guestHistory}}}
 
   Based on this history, provide a list of specific and personalized suggestions that would improve their experience.
