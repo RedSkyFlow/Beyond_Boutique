@@ -1,3 +1,4 @@
+
 import type { Guest } from '@/types';
 import { add, format, sub } from 'date-fns';
 
@@ -56,10 +57,10 @@ Likes a dinner reservation made for 8 PM on the first night.`,
       loyaltyTier: 'Member',
       stayHistory: [
         {
-          hotelName: 'Last Word Long Beach',
+          hotelName: 'Last Word Franschhoek',
           checkInDate: format(add(today, { days: 1 }), 'yyyy-MM-dd'),
           checkOutDate: format(add(today, { days: 5 }), 'yyyy-MM-dd'),
-          roomNumber: '201',
+          roomNumber: '07',
         },
       ],
       preferences: 'First time guest. Interested in local wine tours.',
@@ -104,6 +105,168 @@ Prefers champagne on arrival.`,
       communicationHistory: [
         { date: format(sub(today, { days: 4 }), 'yyyy-MM-dd'), log: "Post-stay 'Thank You' email sent." },
         { date: '2024-01-19', log: "Post-stay 'Thank You' email sent." },
+      ],
+    },
+    {
+      id: 'guest-4',
+      name: 'Liam O\'Connell',
+      email: 'liam.oc@example.com',
+      phone: '555-0104',
+      status: 'Checked-in',
+      totalStays: 5,
+      loyaltyTier: 'Platinum',
+      stayHistory: [
+        {
+          hotelName: 'Last Word Kitara',
+          checkInDate: format(sub(today, { days: 1 }), 'yyyy-MM-dd'),
+          checkOutDate: format(add(today, { days: 6 }), 'yyyy-MM-dd'),
+          roomNumber: '08',
+        },
+      ],
+      preferences: 'Avid bird watcher. Requests binoculars and a local guide book.',
+      onSiteActivity: {
+        firstSeen: format(sub(today, { days: 1, hours: 5 }), 'yyyy-MM-dd, HH:mm'),
+        lastSeen: format(sub(today, { minutes: 30 }), 'yyyy-MM-dd, HH:mm'),
+        connectedDevices: ['Pixel 8 Pro'],
+      },
+      communicationHistory: [
+        { date: format(sub(today, { days: 10 }), 'yyyy-MM-dd'), log: 'Booking confirmation for safari tour.' },
+      ],
+    },
+    {
+      id: 'guest-5',
+      name: 'Sofia Rossi',
+      email: 'sofia.r@example.com',
+      phone: '555-0105',
+      status: 'Arriving Soon',
+      totalStays: 2,
+      loyaltyTier: 'Gold',
+      stayHistory: [
+        {
+          hotelName: 'Last Word Long Beach',
+          checkInDate: '2023-07-20',
+          checkOutDate: '2023-07-25',
+          roomNumber: '301',
+        },
+        {
+          hotelName: 'Last Word Constantia',
+          checkInDate: format(add(today, { days: 3 }), 'yyyy-MM-dd'),
+          checkOutDate: format(add(today, { days: 8 }), 'yyyy-MM-dd'),
+          roomNumber: '11',
+        },
+      ],
+      preferences: 'Requires hypoallergenic bedding. Enjoys white wine, preferably Sauvignon Blanc.',
+      onSiteActivity: {
+        firstSeen: 'N/A',
+        lastSeen: 'N/A',
+        connectedDevices: [],
+      },
+      communicationHistory: [
+        { date: format(sub(today, { days: 4 }), 'yyyy-MM-dd'), log: 'Confirmed dinner reservations via email.' },
+      ],
+    },
+    {
+      id: 'guest-6',
+      name: 'Kenji Tanaka',
+      email: 'kenji.t@example.com',
+      phone: '555-0106',
+      status: 'Checked-out',
+      totalStays: 1,
+      loyaltyTier: 'Member',
+      stayHistory: [
+        {
+          hotelName: 'Last Word Long Beach',
+          checkInDate: format(sub(today, { days: 8 }), 'yyyy-MM-dd'),
+          checkOutDate: format(sub(today, { days: 3 }), 'yyyy-MM-dd'),
+          roomNumber: '105',
+        },
+      ],
+      preferences: 'Interested in surfing lessons. Requested a late check-out.',
+      onSiteActivity: {
+        firstSeen: format(sub(today, { days: 8 }), 'yyyy-MM-dd, HH:mm'),
+        lastSeen: format(sub(today, { days: 3 }), 'yyyy-MM-dd, HH:mm'),
+        connectedDevices: ['Samsung Galaxy S23'],
+      },
+      communicationHistory: [
+        { date: format(sub(today, { days: 2 }), 'yyyy-MM-dd'), log: 'Post-stay survey sent.' },
+      ],
+    },
+    {
+      id: 'guest-7',
+      name: 'Ava Chen',
+      email: 'ava.c@example.com',
+      phone: '555-0107',
+      status: 'Checked-in',
+      totalStays: 4,
+      loyaltyTier: 'Gold',
+      stayHistory: [
+        {
+          hotelName: 'Last Word Kalahari',
+          checkInDate: format(sub(today, { days: 4 }), 'yyyy-MM-dd'),
+          checkOutDate: format(add(today, { days: 1 }), 'yyyy-MM-dd'),
+          roomNumber: 'Dune Villa',
+        },
+      ],
+      preferences: 'Enjoys star-gazing. Allergic to nuts.',
+      onSiteActivity: {
+        firstSeen: format(sub(today, { days: 4 }), 'yyyy-MM-dd, HH:mm'),
+        lastSeen: format(sub(today, { hours: 2 }), 'yyyy-MM-dd, HH:mm'),
+        connectedDevices: ['iPhone 15', 'Apple Watch Ultra'],
+      },
+      communicationHistory: [
+        { date: format(sub(today, { days: 5 }), 'yyyy-MM-dd'), log: 'Dietary restrictions confirmed.' },
+      ],
+    },
+    {
+      id: 'guest-8',
+      name: 'Javier Morales',
+      email: 'javier.m@example.com',
+      phone: '555-0108',
+      status: 'Arriving Soon',
+      totalStays: 1,
+      loyaltyTier: 'Member',
+      stayHistory: [
+        {
+          hotelName: 'Last Word Kitara',
+          checkInDate: format(add(today, { days: 2 }), 'yyyy-MM-dd'),
+          checkOutDate: format(add(today, { days: 7 }), 'yyyy-MM-dd'),
+          roomNumber: '02',
+        },
+      ],
+      preferences: 'Honeymoon couple. Requested a private dinner setup for their arrival night.',
+      onSiteActivity: {
+        firstSeen: 'N/A',
+        lastSeen: 'N/A',
+        connectedDevices: [],
+      },
+      communicationHistory: [
+        { date: format(sub(today, { days: 3 }), 'yyyy-MM-dd'), log: 'Confirmed honeymoon package details.' },
+      ],
+    },
+     {
+      id: 'guest-9',
+      name: 'Chloe Williams',
+      email: 'chloe.w@example.com',
+      phone: '555-0109',
+      status: 'Checked-out',
+      totalStays: 2,
+      loyaltyTier: 'Gold',
+      stayHistory: [
+        {
+          hotelName: 'Last Word Madikwe',
+          checkInDate: format(sub(today, { days: 15 }), 'yyyy-MM-dd'),
+          checkOutDate: format(sub(today, { days: 10 }), 'yyyy-MM-dd'),
+          roomNumber: '10',
+        },
+      ],
+      preferences: 'Family with two young children. Prefers ground-floor rooms.',
+      onSiteActivity: {
+        firstSeen: format(sub(today, { days: 15 }), 'yyyy-MM-dd, HH:mm'),
+        lastSeen: format(sub(today, { days: 10 }), 'yyyy-MM-dd, HH:mm'),
+        connectedDevices: ['iPad Mini', 'iPhone 13', 'iPhone 13'],
+      },
+      communicationHistory: [
+        { date: format(sub(today, { days: 9 }), 'yyyy-MM-dd'), log: 'Post-stay "Thank You" email sent.' },
       ],
     },
   ];
