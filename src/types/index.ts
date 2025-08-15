@@ -20,6 +20,13 @@ export interface Communication {
     log: string;
 }
 
+export interface Feedback {
+  date: string;
+  type: 'Review' | 'Complaint' | 'Suggestion' | 'Comment';
+  content: string;
+  source: string;
+}
+
 export interface Guest {
   id: string;
   name: string;
@@ -33,6 +40,7 @@ export interface Guest {
   preferences: string;
   onSiteActivity: OnSiteActivity;
   communicationHistory: Communication[];
+  feedback: Feedback[];
   age?: number;
   occupation?: string;
   homeTown?: string;

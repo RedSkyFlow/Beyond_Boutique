@@ -50,6 +50,10 @@ Likes a dinner reservation made for 8 PM on the first night.`,
       communicationHistory: [
           { date: '2023-12-27', log: 'Post-stay "Thank You" email sent.'},
           { date: '2023-08-21', log: 'Post-stay "Thank You" email sent.'}
+      ],
+      feedback: [
+        { date: '2023-12-27', type: 'Review', source: 'Email', content: '"Absolutely loved the safari at Kitara. The guide was exceptional."' },
+        { date: '2023-08-20', type: 'Comment', source: 'Front Desk', content: 'Mentioned that the wifi in room 12 was a bit slow in the evening.' },
       ]
     },
     {
@@ -81,7 +85,8 @@ Likes a dinner reservation made for 8 PM on the first night.`,
       },
       communicationHistory: [
           { date: format(sub(today, {days: 7}), 'yyyy-MM-dd'), log: 'Pre-stay "Looking forward to your visit" email sent.'}
-      ]
+      ],
+      feedback: []
     },
     {
       id: 'guest-3',
@@ -121,6 +126,9 @@ Prefers champagne on arrival.`,
         { date: format(sub(today, { days: 4 }), 'yyyy-MM-dd'), log: "Post-stay 'Thank You' email sent." },
         { date: '2024-01-19', log: "Post-stay 'Thank You' email sent." },
       ],
+      feedback: [
+          { date: '2024-01-19', type: 'Review', source: 'TripAdvisor', content: '"The tranquility of the Kalahari property is unmatched. A truly luxurious escape."' },
+      ]
     },
     {
       id: 'guest-4',
@@ -152,6 +160,7 @@ Prefers champagne on arrival.`,
       communicationHistory: [
         { date: format(sub(today, { days: 10 }), 'yyyy-MM-dd'), log: 'Booking confirmation for safari tour.' },
       ],
+      feedback: []
     },
     {
       id: 'guest-5',
@@ -189,6 +198,9 @@ Prefers champagne on arrival.`,
       communicationHistory: [
         { date: format(sub(today, { days: 4 }), 'yyyy-MM-dd'), log: 'Confirmed dinner reservations via email.' },
       ],
+      feedback: [
+        { date: '2023-07-26', type: 'Complaint', source: 'Front Desk', content: 'Air conditioning unit in room 301 was noisy. Offered complimentary breakfast.'}
+      ]
     },
     {
       id: 'guest-6',
@@ -220,6 +232,9 @@ Prefers champagne on arrival.`,
       communicationHistory: [
         { date: format(sub(today, { days: 2 }), 'yyyy-MM-dd'), log: 'Post-stay survey sent.' },
       ],
+      feedback: [
+        { date: format(sub(today, {days: 2}), 'yyyy-MM-dd'), type: 'Suggestion', source: 'Survey', content: 'Suggests offering a shuttle service to popular surfing spots.'}
+      ]
     },
     {
       id: 'guest-7',
@@ -251,6 +266,7 @@ Prefers champagne on arrival.`,
       communicationHistory: [
         { date: format(sub(today, { days: 5 }), 'yyyy-MM-dd'), log: 'Dietary restrictions confirmed.' },
       ],
+      feedback: []
     },
     {
       id: 'guest-8',
@@ -282,6 +298,7 @@ Prefers champagne on arrival.`,
       communicationHistory: [
         { date: format(sub(today, { days: 3 }), 'yyyy-MM-dd'), log: 'Confirmed honeymoon package details.' },
       ],
+      feedback: []
     },
      {
       id: 'guest-9',
@@ -313,6 +330,7 @@ Prefers champagne on arrival.`,
       communicationHistory: [
         { date: format(sub(today, { days: 9 }), 'yyyy-MM-dd'), log: 'Post-stay "Thank You" email sent.' },
       ],
+      feedback: []
     },
      {
       id: 'guest-10',
@@ -342,6 +360,7 @@ Prefers champagne on arrival.`,
         connectedDevices: ['Android Phone'],
       },
       communicationHistory: [],
+      feedback: []
     },
     {
       id: 'guest-11',
@@ -373,6 +392,7 @@ Prefers champagne on arrival.`,
       communicationHistory: [
         { date: format(sub(today, { days: 2 }), 'yyyy-MM-dd'), log: 'Room request acknowledged.' },
       ],
+      feedback: []
     },
     {
       id: 'guest-12',
@@ -404,6 +424,7 @@ Prefers champagne on arrival.`,
       communicationHistory: [
         { date: format(sub(today, { days: 3 }), 'yyyy-MM-dd'), log: 'Post-stay "Thank You" email sent.' },
       ],
+      feedback: []
     },
   ];
 }

@@ -1,8 +1,9 @@
-import type { Guest, GuestSource } from '@/types';
+import type { Guest, GuestSource, Feedback } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase, Globe, Languages, Home } from 'lucide-react';
+import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase, Globe, Languages, Home, MessageSquare, Star, MessageCircle, Frown } from 'lucide-react';
 import { AIPredictions } from './ai-predictions';
 import type { LucideIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface GuestDetailsProps {
   guest: Guest;
@@ -15,6 +16,13 @@ const sourceConfig: Record<GuestSource, { label: string; icon: LucideIcon }> = {
   'Purple WiFi': { label: 'Purple WiFi', icon: Wifi },
   'Tourism Expo': { label: 'Tourism Expo', icon: Briefcase },
 };
+
+const feedbackConfig: Record<Feedback['type'], { icon: LucideIcon, color: string }> = {
+  'Review': { icon: Star, color: 'text-yellow-500' },
+  'Complaint': { icon: Frown, color: 'text-red-500' },
+  'Suggestion': { icon: MessageCircle, color: 'text-blue-500' },
+  'Comment': { icon: MessageSquare, color: 'text-gray-500' },
+}
 
 export function GuestDetails({ guest }: GuestDetailsProps) {
   const currentStay = guest.stayHistory.length > 0 ? guest.stayHistory[guest.stayHistory.length - 1] : null;
@@ -152,6 +160,42 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
         {/* AI Predictions Card */}
         <AIPredictions guest={guest} />
       </div>
+      
+       {/* Guest Feedback Card */}
+      <Card className="shadow-soft">
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <MessageSquare className="h-5 w-5" />
+              Guest Feedback
+            </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {guest.feedback.length > 0 ? (
+            <div className="space-y-4">
+              {guest.feedback.map((item, index) => {
+                const Icon = feedbackConfig[item.type].icon;
+                const color = feedbackConfig[item.type].color;
+                return (
+                  <div key={index} className="flex items-start gap-4 text-sm">
+                    <Icon className={cn("h-5 w-5 mt-0.5 shrink-0", color)} />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold">
+                          {item.type} from {item.source}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{item.date}</p>
+                      </div>
+                      <p className="text-muted-foreground italic mt-1">"{item.content}"</p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No feedback history recorded.</p>
+          )}
+        </CardContent>
+      </Card>
       
       {/* Communication History Card */}
       <Card className="shadow-soft">
