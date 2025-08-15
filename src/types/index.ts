@@ -33,4 +33,8 @@ export interface Guest {
   preferences: string;
   onSiteActivity: OnSiteActivity;
   communicationHistory: Communication[];
+  age?: number;
+  occupation?: string;
+  homeTown?: string;
+  language?: string;
 }

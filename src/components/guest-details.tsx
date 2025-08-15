@@ -1,6 +1,6 @@
 import type { Guest, GuestSource } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase } from 'lucide-react';
+import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase, Globe, Languages, Home } from 'lucide-react';
 import { AIPredictions } from './ai-predictions';
 import type { LucideIcon } from 'lucide-react';
 
@@ -26,7 +26,7 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
       <Card className="shadow-soft">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">{guest.name}</CardTitle>
-          <div className="flex items-center text-sm text-muted-foreground mt-2 gap-6">
+          <div className="flex flex-wrap items-center text-sm text-muted-foreground mt-2 gap-x-6 gap-y-2">
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
               <span>{guest.email}</span>
@@ -35,22 +35,46 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
               <Phone className="h-4 w-4" />
               <span>{guest.phone}</span>
             </div>
+            {guest.homeTown && (
+                <div className="flex items-center gap-2">
+                    <Home className="h-4 w-4" />
+                    <span>{guest.homeTown}</span>
+                </div>
+            )}
           </div>
-          <div className="flex items-center gap-4 pt-2">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm">
             {guest.totalStays > 0 && (
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2">
                 <User className="h-4 w-4 text-primary" />
                 <span>{guest.totalStays}{guest.totalStays === 1 ? 'st' : guest.totalStays === 2 ? 'nd' : guest.totalStays === 3 ? 'rd' : 'th'} Stay</span>
               </div>
             )}
-            <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-2">
               <Award className="h-4 w-4 text-primary" />
               <span>Loyalty Tier: {guest.loyaltyTier}</span>
             </div>
-             <div className="flex items-center gap-2 text-sm">
+             <div className="flex items-center gap-2">
               <Package className="h-4 w-4 text-primary" />
               <span>Origin: {guestSource.label}</span>
             </div>
+             {guest.language && (
+                <div className="flex items-center gap-2">
+                    <Languages className="h-4 w-4 text-primary" />
+                    <span>{guest.language}</span>
+                </div>
+            )}
+             {guest.occupation && (
+                <div className="flex items-center gap-2">
+                    <Briefcase className="h-4 w-4 text-primary" />
+                    <span>{guest.occupation}</span>
+                </div>
+            )}
+            {guest.age && (
+                <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-primary" />
+                    <span>{guest.age} years old</span>
+                </div>
+            )}
           </div>
         </CardHeader>
       </Card>
