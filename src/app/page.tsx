@@ -149,7 +149,7 @@ export default function Home() {
   if (!isClient) {
     return (
         <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
-            <div className="flex-1 grid grid-cols-[350px_1fr]">
+            <div className="flex-1 grid grid-cols-[350px_1fr] overflow-hidden">
                 {/* Skeleton for GuestList */}
                 <div className="flex flex-col h-full bg-card border-r p-4 space-y-4">
                     <Skeleton className="h-8 w-2/3" />
@@ -183,7 +183,7 @@ export default function Home() {
   return (
     <>
       <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
-        <div className="flex-1 grid grid-cols-[350px_1fr]">
+        <div className="flex-1 grid grid-cols-[350px_1fr] min-h-0">
           <GuestList
             guests={filteredGuests}
             selectedGuestId={selectedGuestId}
