@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { Search, SlidersHorizontal, Hotel as HotelIcon } from 'lucide-react';
+import { Search, SlidersHorizontal, Hotel as HotelIcon, BedDouble, Users } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 interface GuestListProps {
@@ -88,41 +88,57 @@ export function GuestList({
       <ScrollArea className="flex-1">
         <div className="p-2">
           <TooltipProvider>
-            {guests.map((guest) => (
+            {guests.map((guest) => {
+              const latestStay = guest.stayHistory[guest.stayHistory.length - 1];
+              return (
               <button
                 key={guest.id}
                 onClick={() => onSelectGuest(guest.id)}
                 className={cn(
-                  'w-full text-left p-3 rounded-lg flex items-center gap-4 transition-colors',
+                  'w-full text-left p-3 rounded-lg flex items-start gap-4 transition-colors',
                   selectedGuestId === guest.id
                     ? 'bg-secondary'
                     : 'hover:bg-secondary/50'
                 )}
               >
-                <Avatar className="w-10 h-10 border">
+                <Avatar className="w-10 h-10 border mt-1">
                   <AvatarImage src={guest.avatarUrl} alt={guest.name} data-ai-hint="person" />
                   <AvatarFallback>{getInitials(guest.name)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between">
                     <p className="font-semibold">{guest.name}</p>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className={cn(
+                              'w-2.5 h-2.5 rounded-full',
+                              statusConfig[guest.status].color
+                            )}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{statusConfig[guest.status].label}</p>
+                        </TooltipContent>
+                      </Tooltip>
                   </div>
                   <p className="text-sm text-muted-foreground">{guest.email}</p>
+                  <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                    {latestStay?.roomNumber && (
+                      <div className='flex items-center gap-1.5'>
+                        <BedDouble className="h-3.5 w-3.5" />
+                        <span>Room {latestStay.roomNumber}</span>
+                      </div>
+                    )}
+                    {latestStay?.partySize && (
+                      <div className='flex items-center gap-1.5'>
+                        <Users className="h-3.5 w-3.5" />
+                        <span>{latestStay.partySize} Guest{latestStay.partySize > 1 ? 's' : ''}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                 <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className={cn(
-                          'w-2.5 h-2.5 rounded-full',
-                          statusConfig[guest.status].color
-                        )}
-                       />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{statusConfig[guest.status].label}</p>
-                    </TooltipContent>
-                  </Tooltip>
               </button>
-            ))}
+            )})}
           </TooltipProvider>
         </div>
       </ScrollArea>

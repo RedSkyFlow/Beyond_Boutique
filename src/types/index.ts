@@ -4,6 +4,8 @@ export interface Stay {
   checkOutDate: string;
   roomType: string;
   notes: string;
+  roomNumber?: string;
+  partySize: number;
 }
 
 export type GuestStatus = 'checked-in' | 'checked-out' | 'due-today' | 'upcoming';
