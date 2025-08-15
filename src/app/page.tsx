@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { guests as initialGuests } from '@/lib/mock-data';
 import type { Guest } from '@/types';
 import { GuestList } from '@/components/guest-list';
 import { GuestDetails } from '@/components/guest-details';
 import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const hotels = [
   'Last Word Madikwe',
@@ -17,13 +18,23 @@ const hotels = [
 ];
 
 export default function Home() {
-  const [allGuests, setAllGuests] = useState<Guest[]>(() => initialGuests());
-  const [selectedGuestId, setSelectedGuestId] = useState<string | null>(allGuests[0]?.id || null);
+  const [allGuests, setAllGuests] = useState<Guest[]>([]);
+  const [selectedGuestId, setSelectedGuestId] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     search: '',
     status: 'all',
     hotel: 'all',
   });
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    const guestsData = initialGuests();
+    setAllGuests(guestsData);
+    if (guestsData.length > 0) {
+      setSelectedGuestId(guestsData[0].id);
+    }
+    setIsClient(true);
+  }, []);
 
   const handleFilterChange = (filterName: string, value: string) => {
     setFilters((prevFilters) => ({ ...prevFilters, [filterName]: value }));
@@ -46,6 +57,40 @@ export default function Home() {
   const handleSelectGuest = (guestId: string) => {
     setSelectedGuestId(guestId);
   };
+  
+  if (!isClient) {
+    return (
+        <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
+            <div className="flex-1 grid grid-cols-[350px_1fr] overflow-hidden">
+                {/* Skeleton for GuestList */}
+                <div className="flex flex-col h-full bg-card border-r p-4 space-y-4">
+                    <Skeleton className="h-8 w-2/3" />
+                    <Skeleton className="h-10 w-full" />
+                    <div className="grid grid-cols-2 gap-2">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                    </div>
+                    <div className="space-y-2 pt-2">
+                        <Skeleton className="h-16 w-full" />
+                        <Skeleton className="h-16 w-full" />
+                        <Skeleton className="h-16 w-full" />
+                        <Skeleton className="h-16 w-full" />
+                    </div>
+                </div>
+                {/* Skeleton for GuestDetails */}
+                <div className="p-4 space-y-4">
+                    <Skeleton className="h-32 w-full" />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <Skeleton className="h-40 w-full" />
+                        <Skeleton className="h-40 w-full" />
+                    </div>
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-32 w-full" />
+                </div>
+            </div>
+        </main>
+    )
+  }
 
   return (
     <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">

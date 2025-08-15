@@ -1,6 +1,5 @@
 import type { Guest } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Mail, Phone, Calendar, BedDouble, User, Award, Wifi, Smartphone, History } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
