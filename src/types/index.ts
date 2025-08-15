@@ -7,6 +7,8 @@ export interface Stay {
 
 export type GuestStatus = 'Checked-in' | 'Arriving Soon' | 'Checked-out';
 
+export type GuestSource = 'PANstrat' | 'Booking.com' | 'Manual Entry' | 'Purple WiFi';
+
 export interface OnSiteActivity {
   firstSeen: string;
   lastSeen: string;
@@ -24,6 +26,7 @@ export interface Guest {
   email: string;
   phone: string;
   status: GuestStatus;
+  source: GuestSource;
   totalStays: number;
   loyaltyTier: 'Member' | 'Gold' | 'Platinum';
   stayHistory: Stay[];

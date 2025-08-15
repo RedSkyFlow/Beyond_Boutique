@@ -1,14 +1,23 @@
-import type { Guest } from '@/types';
+import type { Guest, GuestSource } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History } from 'lucide-react';
+import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package } from 'lucide-react';
 import { AIPredictions } from './ai-predictions';
+import type { LucideIcon } from 'lucide-react';
 
 interface GuestDetailsProps {
   guest: Guest;
 }
 
+const sourceConfig: Record<GuestSource, { label: string; icon: LucideIcon }> = {
+  'PANstrat': { label: 'PANstrat PMS', icon: Database },
+  'Booking.com': { label: 'Booking.com CSV', icon: FileText },
+  'Manual Entry': { label: 'Manual Entry', icon: UserPlus },
+  'Purple WiFi': { label: 'Purple WiFi', icon: Wifi },
+};
+
 export function GuestDetails({ guest }: GuestDetailsProps) {
   const currentStay = guest.stayHistory[guest.stayHistory.length - 1];
+  const guestSource = sourceConfig[guest.source];
 
   return (
     <div className="space-y-4">
@@ -34,6 +43,10 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
             <div className="flex items-center gap-2 text-sm">
               <Award className="h-4 w-4 text-primary" />
               <span>Loyalty Tier: {guest.loyaltyTier}</span>
+            </div>
+             <div className="flex items-center gap-2 text-sm">
+              <Package className="h-4 w-4 text-primary" />
+              <span>Origin: {guestSource.label}</span>
             </div>
           </div>
         </CardHeader>

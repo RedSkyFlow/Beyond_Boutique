@@ -1,14 +1,15 @@
 
 'use client';
 
-import type { Guest, GuestStatus } from '@/types';
+import type { Guest, GuestStatus, GuestSource } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Search, SlidersHorizontal, BedDouble, User, Building, HelpCircle } from 'lucide-react';
+import { Search, SlidersHorizontal, BedDouble, User, Building, HelpCircle, Upload, Database, FileText, UserPlus, Wifi } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
+import type { LucideIcon } from 'lucide-react';
 
 interface GuestListProps {
   guests: Guest[];
@@ -24,6 +25,13 @@ const statusConfig: Record<GuestStatus, { label: string; className: string; }> =
   'Checked-in': { label: 'Checked-in', className: 'bg-green-100 text-green-800' },
   'Arriving Soon': { label: 'Arriving Soon', className: 'bg-yellow-100 text-yellow-800' },
   'Checked-out': { label: 'Checked-out', className: 'bg-gray-100 text-gray-800' },
+};
+
+const sourceConfig: Record<GuestSource, { label: string; icon: LucideIcon }> = {
+  'PANstrat': { label: 'PANstrat PMS', icon: Database },
+  'Booking.com': { label: 'Booking.com CSV', icon: FileText },
+  'Manual Entry': { label: 'Manual Entry', icon: UserPlus },
+  'Purple WiFi': { label: 'Purple WiFi', icon: Wifi },
 };
 
 
@@ -42,18 +50,24 @@ export function GuestList({
       <div className="p-4 space-y-4 border-b">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight">The Last Word</h1>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={onStartTour} className="h-8 w-8">
-                  <HelpCircle className="h-5 w-5 text-muted-foreground" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Take a tour of the app</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+           <div className="flex items-center gap-1">
+            <Button variant="outline" size="sm" className="h-8">
+              <Upload className="h-4 w-4 mr-2"/>
+              Import Guests
+            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" onClick={onStartTour} className="h-8 w-8">
+                    <HelpCircle className="h-5 w-5 text-muted-foreground" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Take a tour of the app</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+           </div>
         </div>
         <div className="relative" id="search-bar">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -131,6 +145,8 @@ export function GuestList({
             {guests.map((guest) => {
               const latestStay = guest.stayHistory[guest.stayHistory.length - 1];
               const guestStatus = statusConfig[guest.status];
+              const guestSource = sourceConfig[guest.source];
+              const SourceIcon = guestSource.icon;
               return (
               <button
                 key={guest.id}
@@ -143,7 +159,19 @@ export function GuestList({
                 )}
               >
                 <div className="flex items-center justify-between">
-                  <p className="font-semibold">{guest.name}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold">{guest.name}</p>
+                     <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <SourceIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Origin: {guestSource.label}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <div className={cn('px-2 py-0.5 text-xs font-medium rounded-full', guestStatus.className)}>
                     {guestStatus.label}
                   </div>
