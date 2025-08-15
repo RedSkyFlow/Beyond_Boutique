@@ -1,29 +1,33 @@
 export interface Stay {
-  id: string;
+  hotelName: string;
   checkInDate: string;
   checkOutDate: string;
-  roomType: string;
-  notes: string;
-  roomNumber?: string;
-  partySize: number;
+  roomNumber: string;
 }
 
-export type GuestStatus = 'checked-in' | 'checked-out' | 'due-today' | 'upcoming';
+export type GuestStatus = 'Checked-in' | 'Arriving Soon' | 'Checked-out';
+
+export interface OnSiteActivity {
+  firstSeen: string;
+  lastSeen: string;
+  connectedDevices: string[];
+}
+
+export interface Communication {
+    date: string;
+    log: string;
+}
 
 export interface Guest {
   id: string;
   name: string;
   email: string;
   phone: string;
-  hotelId: string;
   status: GuestStatus;
   totalStays: number;
+  loyaltyTier: 'Member' | 'Gold' | 'Platinum';
   stayHistory: Stay[];
   preferences: string;
-  avatarUrl: string;
-}
-
-export interface Hotel {
-  id: string;
-  name: string;
+  onSiteActivity: OnSiteActivity;
+  communicationHistory: Communication[];
 }

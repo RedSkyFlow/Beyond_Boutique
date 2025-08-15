@@ -10,9 +10,11 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Alegreya', 'serif'],
-        headline: ['Alegreya', 'serif'],
-        code: ['Source Code Pro', 'monospace'],
+        body: ['var(--font-montserrat)', 'sans-serif'],
+        headline: ['var(--font-montserrat)', 'sans-serif'],
+      },
+      boxShadow: {
+        soft: '0 4px 12px rgba(0, 0, 0, 0.05)',
       },
       colors: {
         background: 'hsl(var(--background))',

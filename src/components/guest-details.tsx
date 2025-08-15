@@ -1,104 +1,116 @@
-import type { Guest, GuestStatus } from '@/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import type { Guest } from '@/types';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Mail, Phone, CalendarDays } from 'lucide-react';
-import { PreferencesEditor } from './preferences-editor';
-import { PreferenceSuggestor } from './preference-suggestor';
+import { Mail, Phone, Calendar, BedDouble, User, Award, Wifi, Smartphone, History } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface GuestDetailsProps {
   guest: Guest;
-  onPreferencesChange: (guestId: string, newPreferences: string) => void;
 }
 
-const statusConfig: Record<GuestStatus, { label: string; color: string; }> = {
-  'checked-in': { label: 'Checked In', color: 'bg-green-500 text-white' },
-  'checked-out': { label: 'Checked Out', color: 'bg-gray-500 text-white' },
-  'due-today': { label: 'Due Today', color: 'bg-blue-500 text-white' },
-  'upcoming': { label: 'Upcoming', color: 'bg-yellow-500 text-black' },
-};
-
-
-export function GuestDetails({ guest, onPreferencesChange }: GuestDetailsProps) {
-  const getInitials = (name: string) => {
-    const names = name.split(' ');
-    if (names.length > 1) {
-      return `${names[0][0]}${names[names.length - 1][0]}`;
-    }
-    return names[0][0];
-  };
-
-  const currentStatus = statusConfig[guest.status];
+export function GuestDetails({ guest }: GuestDetailsProps) {
+  const currentStay = guest.stayHistory[guest.stayHistory.length - 1];
 
   return (
-    <Card className="h-full overflow-y-auto">
-      <CardHeader>
-        <div className="flex items-start gap-4">
-          <Avatar className="w-16 h-16 border">
-            <AvatarImage src={guest.avatarUrl} alt={guest.name} data-ai-hint="person portrait" />
-            <AvatarFallback>{getInitials(guest.name)}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <div className="flex items-center gap-4">
-              <CardTitle className="font-headline text-3xl">{guest.name}</CardTitle>
-              <Badge className={currentStatus.color}>
-                {currentStatus.label}
-              </Badge>
+    <div className="space-y-4">
+      {/* Guest Header Card */}
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle className="text-3xl font-bold">{guest.name}</CardTitle>
+          <div className="flex items-center text-sm text-muted-foreground mt-2 gap-6">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              <span>{guest.email}</span>
             </div>
-            <div className="flex items-center text-sm text-muted-foreground mt-2 gap-6">
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                <span>{guest.email}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                <span>{guest.phone}</span>
-              </div>
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4" />
+              <span>{guest.phone}</span>
             </div>
-            <p className="text-sm mt-1 text-muted-foreground">Total Stays: {guest.totalStays}</p>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <Separator />
-        
-        <div className="space-y-4">
-          <h3 className="text-xl font-headline">Preferences</h3>
-          <PreferencesEditor guest={guest} onPreferencesChange={onPreferencesChange} />
-        </div>
+          <div className="flex items-center gap-4 pt-2">
+            <div className="flex items-center gap-2 text-sm">
+              <User className="h-4 w-4 text-primary" />
+              <span>{guest.totalStays}{guest.totalStays === 1 ? 'st' : guest.totalStays === 2 ? 'nd' : guest.totalStays === 3 ? 'rd' : 'th'} Stay</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Award className="h-4 w-4 text-primary" />
+              <span>Loyalty Tier: {guest.loyaltyTier}</span>
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
 
-        <Separator />
-        
-        <div className="space-y-4">
-          <PreferenceSuggestor guest={guest} />
-        </div>
-        
-        <Separator />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Current Stay Card */}
+        <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <Calendar className="h-5 w-5" />
+              Current Stay
+            </CardTitle>
+            <CardDescription>{currentStay.hotelName}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <p className="flex items-center gap-2"><span className="font-semibold w-28">Check-in:</span> {currentStay.checkInDate}</p>
+            <p className="flex items-center gap-2"><span className="font-semibold w-28">Check-out:</span> {currentStay.checkOutDate}</p>
+            <p className="flex items-center gap-2"><span className="font-semibold w-28">Room Number:</span> {currentStay.roomNumber}</p>
+          </CardContent>
+        </Card>
 
-        <div>
-          <h3 className="text-xl font-headline mb-4">Stay History</h3>
-          <div className="space-y-4">
-            {guest.stayHistory.map((stay) => (
-              <Card key={stay.id} className="bg-secondary/50">
-                <CardHeader>
-                  <CardTitle className="font-headline text-lg flex justify-between items-center">
-                    <span>{stay.roomType}</span>
-                    <span className="text-sm font-normal text-muted-foreground flex items-center gap-2">
-                      <CalendarDays className="h-4 w-4" />
-                      {stay.checkInDate} - {stay.checkOutDate}
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{stay.notes}</p>
-                </CardContent>
-              </Card>
+        {/* On-Site Activity Card */}
+        <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <Wifi className="h-5 w-5" />
+              On-Site Activity
+            </CardTitle>
+            <CardDescription>Purple WiFi Analytics</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <p><span className="font-semibold">First Seen:</span> {guest.onSiteActivity.firstSeen}</p>
+            <p><span className="font-semibold">Last Seen:</span> {guest.onSiteActivity.lastSeen}</p>
+            <div className="flex items-start gap-2 pt-1">
+              <Smartphone className="h-4 w-4 mt-0.5"/>
+              <div>
+                <p className="font-semibold">Connected Devices:</p>
+                <ul className="list-disc pl-5 text-muted-foreground">
+                  {guest.onSiteActivity.connectedDevices.map(device => <li key={device}>{device}</li>)}
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Guest Preferences Card */}
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle className="text-xl">Guest Preferences</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{guest.preferences}</p>
+        </CardContent>
+      </Card>
+      
+      {/* Communication History Card */}
+      <Card className="shadow-soft">
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <History className="h-5 w-5" />
+              Communication History
+            </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2 text-sm">
+            {guest.communicationHistory.map(item => (
+              <li key={item.date} className="flex items-center gap-2">
+                <span className="font-semibold">{item.date}:</span>
+                <span className="text-muted-foreground">{item.log}</span>
+              </li>
             ))}
-          </div>
-        </div>
-
-      </CardContent>
-    </Card>
+          </ul>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

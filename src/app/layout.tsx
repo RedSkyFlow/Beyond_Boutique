@@ -1,10 +1,17 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import { Montserrat } from 'next/font/google';
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-montserrat',
+});
 
 export const metadata: Metadata = {
-  title: 'Boutique CRM',
-  description: 'A CRM for boutique hotels.',
+  title: 'The Last Word - Beyond Boutique CRM',
+  description: 'A CRM for The Last Word hotels.',
 };
 
 export default function RootLayout({
@@ -14,12 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;700&family=Source+Code+Pro&display=swap" rel="stylesheet" />
-      </head>
-      <body className="font-body antialiased">
+      <body className={`${montserrat.variable} font-body antialiased`}>
         {children}
         <Toaster />
       </body>
