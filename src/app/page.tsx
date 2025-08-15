@@ -7,12 +7,22 @@ import { GuestList } from '@/components/guest-list';
 import { GuestDetails } from '@/components/guest-details';
 import { Card, CardContent } from '@/components/ui/card';
 
+const hotels = [
+  'Last Word Madikwe',
+  'Last Word Kitara',
+  'Last Word Constantia',
+  'Last Word Franschhoek',
+  'Last Word Long Beach',
+  'Last Word Kalahari',
+];
+
 export default function Home() {
   const [allGuests, setAllGuests] = useState<Guest[]>(initialGuests);
   const [selectedGuestId, setSelectedGuestId] = useState<string | null>(initialGuests[0]?.id || null);
   const [filters, setFilters] = useState({
     search: '',
     status: 'all',
+    hotel: 'all',
   });
 
   const handleFilterChange = (filterName: string, value: string) => {
@@ -23,7 +33,8 @@ export default function Home() {
     return allGuests.filter((guest) => {
       const searchMatch = guest.name.toLowerCase().includes(filters.search.toLowerCase());
       const statusMatch = filters.status === 'all' || guest.status === filters.status;
-      return searchMatch && statusMatch;
+      const hotelMatch = filters.hotel === 'all' || guest.stayHistory.some(stay => stay.hotelName === filters.hotel);
+      return searchMatch && statusMatch && hotelMatch;
     });
   }, [allGuests, filters]);
 
@@ -45,6 +56,7 @@ export default function Home() {
           onSelectGuest={handleSelectGuest}
           filters={filters}
           onFilterChange={handleFilterChange}
+          hotels={hotels}
         />
         <div className="p-4 bg-background overflow-y-auto">
           {selectedGuest ? (

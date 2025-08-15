@@ -26,7 +26,7 @@ export const guests: Guest[] = [
         roomNumber: '05',
       },
       {
-        hotelName: 'Last Word Franschhoek',
+        hotelName: 'Last Word Madikwe',
         checkInDate: format(sub(today, { days: 2 }), 'yyyy-MM-dd'),
         checkOutDate: format(add(today, { days: 3 }), 'yyyy-MM-dd'),
         roomNumber: '15',
@@ -81,7 +81,7 @@ Likes a dinner reservation made for 8 PM on the first night.`,
     loyaltyTier: 'Platinum',
     stayHistory: [
         {
-            hotelName: 'Last Word Constantia',
+            hotelName: 'Last Word Kalahari',
             checkInDate: '2024-01-10',
             checkOutDate: '2024-01-18',
             roomNumber: 'Suite 01',

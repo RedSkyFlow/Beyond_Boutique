@@ -5,14 +5,15 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Search, SlidersHorizontal, BedDouble, User } from 'lucide-react';
+import { Search, SlidersHorizontal, BedDouble, User, Building } from 'lucide-react';
 
 interface GuestListProps {
   guests: Guest[];
   selectedGuestId: string | null;
   onSelectGuest: (guestId: string) => void;
-  filters: { search: string; status: string };
+  filters: { search: string; status: string; hotel: string };
   onFilterChange: (filterName: string, value: string) => void;
+  hotels: string[];
 }
 
 const statusConfig: Record<GuestStatus, { label: string; className: string; }> = {
@@ -28,6 +29,7 @@ export function GuestList({
   onSelectGuest,
   filters,
   onFilterChange,
+  hotels,
 }: GuestListProps) {
 
   return (
@@ -43,7 +45,21 @@ export function GuestList({
             onChange={(e) => onFilterChange('search', e.target.value)}
           />
         </div>
-        <div>
+        <div className="grid grid-cols-2 gap-2">
+          <Select value={filters.hotel} onValueChange={(value) => onFilterChange('hotel', value)}>
+            <SelectTrigger>
+              <div className='flex items-center gap-2'>
+                <Building className="h-4 w-4 text-muted-foreground" />
+                <SelectValue placeholder="All Hotels" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Hotels</SelectItem>
+              {hotels.map((hotel) => (
+                <SelectItem key={hotel} value={hotel}>{hotel.replace('Last Word ', '')}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={filters.status} onValueChange={(value) => onFilterChange('status', value)}>
             <SelectTrigger>
               <div className='flex items-center gap-2'>
