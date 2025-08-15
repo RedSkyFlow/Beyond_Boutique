@@ -163,8 +163,10 @@ export function GuestList({
                     <p className="font-semibold">{guest.name}</p>
                      <TooltipProvider>
                       <Tooltip>
-                        <TooltipTrigger>
-                          <SourceIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                        <TooltipTrigger asChild onClick={(e) => e.stopPropagation()}>
+                          <span className="flex items-center">
+                            <SourceIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                          </span>
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Origin: {guestSource.label}</p>
