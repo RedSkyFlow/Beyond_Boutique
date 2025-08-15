@@ -3,12 +3,14 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { guests as initialGuests } from '@/lib/mock-data';
-import type { Guest } from '@/types';
+import type { Guest, GuestSource } from '@/types';
 import { GuestList } from '@/components/guest-list';
 import { GuestDetails } from '@/components/guest-details';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AppTour } from '@/components/app-tour';
+import { GuestImportDialog } from '@/components/guest-import-dialog';
+import { format } from 'date-fns';
 
 const hotels = [
   'Last Word Madikwe',
@@ -29,6 +31,7 @@ export default function Home() {
   });
   const [isClient, setIsClient] = useState(false);
   const [isTourOpen, setIsTourOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
 
   useEffect(() => {
     const guestsData = initialGuests();
@@ -61,6 +64,58 @@ export default function Home() {
     setSelectedGuestId(guestId);
   };
   
+  const handleImportGuests = (csvText: string, source: GuestSource) => {
+    const newGuests: Guest[] = [];
+    const rows = csvText.split('\n').filter(row => row.trim() !== '');
+    const today = new Date();
+
+    rows.forEach((row, index) => {
+        try {
+            const [name, email, phone, hotelName, roomNumber, checkIn, checkOut] = row.split(',').map(item => item.trim());
+            
+            // A simple way to determine status based on dates
+            const checkInDate = new Date(checkIn);
+            let status: 'Checked-in' | 'Arriving Soon' | 'Checked-out';
+            if (checkInDate > today) {
+                status = 'Arriving Soon';
+            } else {
+                status = 'Checked-in'; // Simplified for demo
+            }
+
+            const guest: Guest = {
+                id: `imported-${Date.now()}-${index}`,
+                name,
+                email,
+                phone,
+                source,
+                status,
+                totalStays: 1,
+                loyaltyTier: 'Member',
+                preferences: 'Newly imported guest.',
+                stayHistory: [{
+                    hotelName,
+                    roomNumber,
+                    checkInDate: format(checkInDate, 'yyyy-MM-dd'),
+                    checkOutDate: format(new Date(checkOut), 'yyyy-MM-dd'),
+                }],
+                onSiteActivity: {
+                    firstSeen: 'N/A',
+                    lastSeen: 'N/A',
+                    connectedDevices: [],
+                },
+                communicationHistory: [],
+            };
+            newGuests.push(guest);
+        } catch (e) {
+            console.error(`Could not parse row ${index + 1}: ${row}`, e);
+        }
+    });
+
+    setAllGuests(prevGuests => [...prevGuests, ...newGuests]);
+    setIsImportOpen(false);
+};
+
+
   if (!isClient) {
     return (
         <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
@@ -107,6 +162,7 @@ export default function Home() {
             onFilterChange={handleFilterChange}
             hotels={hotels}
             onStartTour={() => setIsTourOpen(true)}
+            onImportClick={() => setIsImportOpen(true)}
           />
           <div className="p-4 bg-background overflow-y-auto" id="guest-details-panel">
             {selectedGuest ? (
@@ -127,6 +183,11 @@ export default function Home() {
         </div>
       </main>
       <AppTour isOpen={isTourOpen} onOpenChange={setIsTourOpen} />
+      <GuestImportDialog 
+        isOpen={isImportOpen} 
+        onOpenChange={setIsImportOpen}
+        onImport={handleImportGuests}
+      />
     </>
   );
 }

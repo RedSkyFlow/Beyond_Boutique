@@ -19,6 +19,7 @@ interface GuestListProps {
   onFilterChange: (filterName: string, value: string) => void;
   hotels: string[];
   onStartTour: () => void;
+  onImportClick: () => void;
 }
 
 const statusConfig: Record<GuestStatus, { label: string; className: string; }> = {
@@ -43,6 +44,7 @@ export function GuestList({
   onFilterChange,
   hotels,
   onStartTour,
+  onImportClick,
 }: GuestListProps) {
 
   return (
@@ -51,7 +53,7 @@ export function GuestList({
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight">The Last Word</h1>
            <div className="flex items-center gap-1">
-            <Button variant="outline" size="sm" className="h-8">
+            <Button variant="outline" size="sm" className="h-8" onClick={onImportClick}>
               <Upload className="h-4 w-4 mr-2"/>
               Import Guests
             </Button>
