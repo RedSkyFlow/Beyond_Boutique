@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AppTour } from '@/components/app-tour';
 import { GuestImportDialog } from '@/components/guest-import-dialog';
 import { format } from 'date-fns';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const hotels = [
   'Last Word Madikwe',
@@ -93,6 +94,7 @@ export default function Home() {
                         connectedDevices: [],
                     },
                     communicationHistory: [],
+                    feedback: [],
                 };
                 newGuests.push(guest);
             } else if (columns.length >= 7) {
@@ -128,6 +130,7 @@ export default function Home() {
                         connectedDevices: [],
                     },
                     communicationHistory: [],
+                    feedback: [],
                 };
                 newGuests.push(guest);
             } else {
@@ -191,22 +194,24 @@ export default function Home() {
             onStartTour={() => setIsTourOpen(true)}
             onImportClick={() => setIsImportOpen(true)}
           />
-          <div className="p-4 bg-background overflow-y-auto" id="guest-details-panel">
-            {selectedGuest ? (
-              <GuestDetails guest={selectedGuest} />
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <Card className="w-full max-w-md shadow-soft">
-                  <CardContent className="p-8 text-center">
-                    <h3 className="text-lg font-semibold">No Guest Selected</h3>
-                    <p className="text-muted-foreground mt-2">
-                      Please select a guest from the list to view their details.
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-          </div>
+          <ScrollArea className="bg-background" id="guest-details-panel">
+            <div className="p-4">
+              {selectedGuest ? (
+                <GuestDetails guest={selectedGuest} />
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <Card className="w-full max-w-md shadow-soft">
+                    <CardContent className="p-8 text-center">
+                      <h3 className="text-lg font-semibold">No Guest Selected</h3>
+                      <p className="text-muted-foreground mt-2">
+                        Please select a guest from the list to view their details.
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
         </div>
       </main>
       <AppTour isOpen={isTourOpen} onOpenChange={setIsTourOpen} />
