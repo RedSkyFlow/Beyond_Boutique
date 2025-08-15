@@ -7,7 +7,7 @@ import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database
 import { AIPredictions } from './ai-predictions';
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { DndContext, closestCenter, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableCard } from './sortable-card';

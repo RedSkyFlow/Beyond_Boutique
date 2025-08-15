@@ -24,7 +24,7 @@ export function AIPredictions({ guest }: AIPredictionsProps) {
     setError(null);
     setPredictions(null);
 
-    const guestStatus = guest.totalStays === 1 ? 'New Guest' : 'Returning Guest';
+    const guestStatus = guest.totalStays <= 1 ? 'New Guest' : 'Returning Guest';
 
     const guestHistory = `
       Guest Name: ${guest.name}
