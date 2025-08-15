@@ -1,7 +1,7 @@
 import type { Guest } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Mail, Phone, Calendar, BedDouble, User, Award, Wifi, Smartphone, History } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History } from 'lucide-react';
+import { AIPredictions } from './ai-predictions';
 
 interface GuestDetailsProps {
   guest: Guest;
@@ -80,16 +80,21 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
           </CardContent>
         </Card>
       </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Guest Preferences Card */}
+        <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle className="text-xl">Guest Preferences</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{guest.preferences}</p>
+          </CardContent>
+        </Card>
 
-      {/* Guest Preferences Card */}
-      <Card className="shadow-soft">
-        <CardHeader>
-          <CardTitle className="text-xl">Guest Preferences</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{guest.preferences}</p>
-        </CardContent>
-      </Card>
+        {/* AI Predictions Card */}
+        <AIPredictions guest={guest} />
+      </div>
       
       {/* Communication History Card */}
       <Card className="shadow-soft">
