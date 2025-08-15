@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Search, SlidersHorizontal, BedDouble, User, Building, HelpCircle, Upload, Database, FileText, UserPlus, Wifi } from 'lucide-react';
+import { Search, SlidersHorizontal, BedDouble, User, Building, HelpCircle, Upload, Database, FileText, UserPlus, Wifi, Briefcase } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import type { LucideIcon } from 'lucide-react';
@@ -26,6 +26,7 @@ const statusConfig: Record<GuestStatus, { label: string; className: string; }> =
   'Checked-in': { label: 'Checked-in', className: 'bg-green-100 text-green-800' },
   'Arriving Soon': { label: 'Arriving Soon', className: 'bg-yellow-100 text-yellow-800' },
   'Checked-out': { label: 'Checked-out', className: 'bg-gray-100 text-gray-800' },
+  'Prospect': { label: 'Prospect', className: 'bg-blue-100 text-blue-800' },
 };
 
 const sourceConfig: Record<GuestSource, { label: string; icon: LucideIcon }> = {
@@ -33,6 +34,7 @@ const sourceConfig: Record<GuestSource, { label: string; icon: LucideIcon }> = {
   'Booking.com': { label: 'Booking.com CSV', icon: FileText },
   'Manual Entry': { label: 'Manual Entry', icon: UserPlus },
   'Purple WiFi': { label: 'Purple WiFi', icon: Wifi },
+  'Tourism Expo': { label: 'Tourism Expo', icon: Briefcase },
 };
 
 
@@ -55,7 +57,7 @@ export function GuestList({
            <div className="flex items-center gap-1">
             <Button variant="outline" size="sm" className="h-8" onClick={onImportClick}>
               <Upload className="h-4 w-4 mr-2"/>
-              Import Guests
+              Import Data
             </Button>
             <TooltipProvider>
               <Tooltip>
@@ -145,7 +147,7 @@ export function GuestList({
       <ScrollArea className="flex-1">
         <div className="p-2 space-y-1" id="guest-list">
             {guests.map((guest) => {
-              const latestStay = guest.stayHistory[guest.stayHistory.length - 1];
+              const latestStay = guest.stayHistory.length > 0 ? guest.stayHistory[guest.stayHistory.length - 1] : null;
               const guestStatus = statusConfig[guest.status];
               const guestSource = sourceConfig[guest.source];
               const SourceIcon = guestSource.icon;
@@ -180,16 +182,23 @@ export function GuestList({
                     {guestStatus.label}
                   </div>
                 </div>
-                <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
-                  <div className='flex items-center gap-1.5'>
-                    <BedDouble className="h-3.5 w-3.5" />
-                    <span>Room {latestStay.roomNumber}</span>
+                {guest.status !== 'Prospect' && latestStay && (
+                  <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
+                    <div className='flex items-center gap-1.5'>
+                      <BedDouble className="h-3.5 w-3.5" />
+                      <span>Room {latestStay.roomNumber}</span>
+                    </div>
+                    <div className='flex items-center gap-1.5'>
+                      <User className="h-3.5 w-3.5" />
+                      <span>{guest.totalStays}{guest.totalStays === 1 ? 'st' : guest.totalStays === 2 ? 'nd' : 'rd'} Stay</span>
+                    </div>
                   </div>
-                  <div className='flex items-center gap-1.5'>
-                    <User className="h-3.5 w-3.5" />
-                    <span>{guest.totalStays}{guest.totalStays === 1 ? 'st' : guest.totalStays === 2 ? 'nd' : 'rd'} Stay</span>
+                )}
+                 {guest.status === 'Prospect' && (
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    <p>No stay history.</p>
                   </div>
-                </div>
+                )}
               </button>
             )})}
         </div>

@@ -5,9 +5,9 @@ export interface Stay {
   roomNumber: string;
 }
 
-export type GuestStatus = 'Checked-in' | 'Arriving Soon' | 'Checked-out';
+export type GuestStatus = 'Checked-in' | 'Arriving Soon' | 'Checked-out' | 'Prospect';
 
-export type GuestSource = 'PANstrat' | 'Booking.com' | 'Manual Entry' | 'Purple WiFi';
+export type GuestSource = 'PANstrat' | 'Booking.com' | 'Manual Entry' | 'Purple WiFi' | 'Tourism Expo';
 
 export interface OnSiteActivity {
   firstSeen: string;

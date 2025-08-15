@@ -8,6 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import type { GuestSource } from '@/types';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Info } from 'lucide-react';
 
 interface GuestImportDialogProps {
   isOpen: boolean;
@@ -15,7 +17,7 @@ interface GuestImportDialogProps {
   onImport: (csvText: string, source: GuestSource) => void;
 }
 
-const importSources: GuestSource[] = ['Booking.com', 'Manual Entry', 'PANstrat', 'Purple WiFi'];
+const importSources: GuestSource[] = ['Booking.com', 'Manual Entry', 'PANstrat', 'Purple WiFi', 'Tourism Expo'];
 
 export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImportDialogProps) {
   const [csvText, setCsvText] = useState('');
@@ -31,16 +33,20 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle>Import Guests</DialogTitle>
+          <DialogTitle>Import Guests or Prospects</DialogTitle>
           <DialogDescription>
-            Paste CSV data below. Each line should be a new guest in the format:
-            <br />
-            <code className="text-xs bg-muted p-1 rounded">
-              name,email,phone,hotelName,roomNumber,YYYY-MM-DD,YYYY-MM-DD
-            </code>
+            Paste CSV data below. The system will automatically detect the format.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
+          <Alert>
+            <Info className="h-4 w-4" />
+            <AlertDescription className="text-xs">
+              <b>Guest Format:</b> <code className="bg-muted p-1 rounded">name,email,phone,hotel,room,checkIn,checkOut</code>
+              <br/>
+              <b>Prospect Format:</b> <code className="bg-muted p-1 rounded">name,email,phone</code>
+            </AlertDescription>
+          </Alert>
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="csv-data">Guest Data (CSV)</Label>
             <Textarea
@@ -67,7 +73,7 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
         </div>
         <DialogFooter>
           <Button type="button" onClick={handleImportClick} disabled={!csvText.trim()}>
-            Import Guests
+            Import Data
           </Button>
         </DialogFooter>
       </DialogContent>

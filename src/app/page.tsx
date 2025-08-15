@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { guests as initialGuests } from '@/lib/mock-data';
-import type { Guest, GuestSource } from '@/types';
+import type { Guest, GuestSource, GuestStatus } from '@/types';
 import { GuestList } from '@/components/guest-list';
 import { GuestDetails } from '@/components/guest-details';
 import { Card, CardContent } from '@/components/ui/card';
@@ -71,41 +71,68 @@ export default function Home() {
 
     rows.forEach((row, index) => {
         try {
-            const [name, email, phone, hotelName, roomNumber, checkIn, checkOut] = row.split(',').map(item => item.trim());
-            
-            // A simple way to determine status based on dates
-            const checkInDate = new Date(checkIn);
-            let status: 'Checked-in' | 'Arriving Soon' | 'Checked-out';
-            if (checkInDate > today) {
-                status = 'Arriving Soon';
-            } else {
-                status = 'Checked-in'; // Simplified for demo
-            }
+            const columns = row.split(',').map(item => item.trim());
+            const [name, email, phone] = columns;
 
-            const guest: Guest = {
-                id: `imported-${Date.now()}-${index}`,
-                name,
-                email,
-                phone,
-                source,
-                status,
-                totalStays: 1,
-                loyaltyTier: 'Member',
-                preferences: 'Newly imported guest.',
-                stayHistory: [{
-                    hotelName,
-                    roomNumber,
-                    checkInDate: format(checkInDate, 'yyyy-MM-dd'),
-                    checkOutDate: format(new Date(checkOut), 'yyyy-MM-dd'),
-                }],
-                onSiteActivity: {
-                    firstSeen: 'N/A',
-                    lastSeen: 'N/A',
-                    connectedDevices: [],
-                },
-                communicationHistory: [],
-            };
-            newGuests.push(guest);
+            if (columns.length === 3) {
+                // Prospect format: name,email,phone
+                const guest: Guest = {
+                    id: `imported-${Date.now()}-${index}`,
+                    name,
+                    email,
+                    phone,
+                    source,
+                    status: 'Prospect',
+                    totalStays: 0,
+                    loyaltyTier: 'Member',
+                    preferences: 'Newly imported prospect.',
+                    stayHistory: [],
+                    onSiteActivity: {
+                        firstSeen: 'N/A',
+                        lastSeen: 'N/A',
+                        connectedDevices: [],
+                    },
+                    communicationHistory: [],
+                };
+                newGuests.push(guest);
+            } else if (columns.length >= 7) {
+                // Guest with stay format: name,email,phone,hotelName,roomNumber,checkIn,checkOut
+                const [,,, hotelName, roomNumber, checkIn, checkOut] = columns;
+                const checkInDate = new Date(checkIn);
+                let status: GuestStatus;
+                if (checkInDate > today) {
+                    status = 'Arriving Soon';
+                } else {
+                    status = 'Checked-in'; // Simplified for demo
+                }
+
+                const guest: Guest = {
+                    id: `imported-${Date.now()}-${index}`,
+                    name,
+                    email,
+                    phone,
+                    source,
+                    status,
+                    totalStays: 1,
+                    loyaltyTier: 'Member',
+                    preferences: 'Newly imported guest.',
+                    stayHistory: [{
+                        hotelName,
+                        roomNumber,
+                        checkInDate: format(checkInDate, 'yyyy-MM-dd'),
+                        checkOutDate: format(new Date(checkOut), 'yyyy-MM-dd'),
+                    }],
+                    onSiteActivity: {
+                        firstSeen: 'N/A',
+                        lastSeen: 'N/A',
+                        connectedDevices: [],
+                    },
+                    communicationHistory: [],
+                };
+                newGuests.push(guest);
+            } else {
+                throw new Error('Invalid CSV format');
+            }
         } catch (e) {
             console.error(`Could not parse row ${index + 1}: ${row}`, e);
         }
