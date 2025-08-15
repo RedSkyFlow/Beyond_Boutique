@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -7,6 +8,7 @@ import { GuestList } from '@/components/guest-list';
 import { GuestDetails } from '@/components/guest-details';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AppTour } from '@/components/app-tour';
 
 const hotels = [
   'Last Word Madikwe',
@@ -26,6 +28,7 @@ export default function Home() {
     hotel: 'all',
   });
   const [isClient, setIsClient] = useState(false);
+  const [isTourOpen, setIsTourOpen] = useState(false);
 
   useEffect(() => {
     const guestsData = initialGuests();
@@ -93,33 +96,37 @@ export default function Home() {
   }
 
   return (
-    <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
-      <div className="flex-1 grid grid-cols-[350px_1fr] overflow-hidden">
-        <GuestList
-          guests={filteredGuests}
-          selectedGuestId={selectedGuestId}
-          onSelectGuest={handleSelectGuest}
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          hotels={hotels}
-        />
-        <div className="p-4 bg-background overflow-y-auto">
-          {selectedGuest ? (
-            <GuestDetails guest={selectedGuest} />
-          ) : (
-            <div className="flex items-center justify-center h-full">
-              <Card className="w-full max-w-md shadow-soft">
-                <CardContent className="p-8 text-center">
-                  <h3 className="text-lg font-semibold">No Guest Selected</h3>
-                  <p className="text-muted-foreground mt-2">
-                    Please select a guest from the list to view their details.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+    <>
+      <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
+        <div className="flex-1 grid grid-cols-[350px_1fr] overflow-hidden">
+          <GuestList
+            guests={filteredGuests}
+            selectedGuestId={selectedGuestId}
+            onSelectGuest={handleSelectGuest}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            hotels={hotels}
+            onStartTour={() => setIsTourOpen(true)}
+          />
+          <div className="p-4 bg-background overflow-y-auto" id="guest-details-panel">
+            {selectedGuest ? (
+              <GuestDetails guest={selectedGuest} />
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <Card className="w-full max-w-md shadow-soft">
+                  <CardContent className="p-8 text-center">
+                    <h3 className="text-lg font-semibold">No Guest Selected</h3>
+                    <p className="text-muted-foreground mt-2">
+                      Please select a guest from the list to view their details.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+      <AppTour isOpen={isTourOpen} onOpenChange={setIsTourOpen} />
+    </>
   );
 }

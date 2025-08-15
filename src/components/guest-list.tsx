@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Guest, GuestStatus } from '@/types';
@@ -5,7 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Search, SlidersHorizontal, BedDouble, User, Building } from 'lucide-react';
+import { Search, SlidersHorizontal, BedDouble, User, Building, HelpCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
 
 interface GuestListProps {
   guests: Guest[];
@@ -14,6 +17,7 @@ interface GuestListProps {
   filters: { search: string; status: string; hotel: string };
   onFilterChange: (filterName: string, value: string) => void;
   hotels: string[];
+  onStartTour: () => void;
 }
 
 const statusConfig: Record<GuestStatus, { label: string; className: string; }> = {
@@ -30,54 +34,100 @@ export function GuestList({
   filters,
   onFilterChange,
   hotels,
+  onStartTour,
 }: GuestListProps) {
 
   return (
     <div className="flex flex-col h-full bg-card border-r">
       <div className="p-4 space-y-4 border-b">
-        <h1 className="text-2xl font-bold tracking-tight">The Last Word</h1>
-        <div className="relative">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold tracking-tight">The Last Word</h1>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" onClick={onStartTour} className="h-8 w-8">
+                  <HelpCircle className="h-5 w-5 text-muted-foreground" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Take a tour of the app</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="relative" id="search-bar">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search guests..."
-            className="pl-9"
-            value={filters.search}
-            onChange={(e) => onFilterChange('search', e.target.value)}
-          />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                  <Input
+                    placeholder="Search guests..."
+                    className="pl-9"
+                    value={filters.search}
+                    onChange={(e) => onFilterChange('search', e.target.value)}
+                  />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Search for guests by name</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <Select value={filters.hotel} onValueChange={(value) => onFilterChange('hotel', value)}>
-            <SelectTrigger>
-              <div className='flex items-center gap-2'>
-                <Building className="h-4 w-4 text-muted-foreground" />
-                <SelectValue placeholder="All Hotels" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Hotels</SelectItem>
-              {hotels.map((hotel) => (
-                <SelectItem key={hotel} value={hotel}>{hotel.replace('Last Word ', '')}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={filters.status} onValueChange={(value) => onFilterChange('status', value)}>
-            <SelectTrigger>
-              <div className='flex items-center gap-2'>
-                <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-                <SelectValue placeholder="All Statuses" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              {Object.entries(statusConfig).map(([status, config]) => (
-                <SelectItem key={status} value={status}>{config.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div id="hotel-filter">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Select value={filters.hotel} onValueChange={(value) => onFilterChange('hotel', value)}>
+                    <SelectTrigger>
+                      <div className='flex items-center gap-2'>
+                        <Building className="h-4 w-4 text-muted-foreground" />
+                        <SelectValue placeholder="All Hotels" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Hotels</SelectItem>
+                      {hotels.map((hotel) => (
+                        <SelectItem key={hotel} value={hotel}>{hotel.replace('Last Word ', '')}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Filter guests by hotel</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <div id="status-filter">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Select value={filters.status} onValueChange={(value) => onFilterChange('status', value)}>
+                    <SelectTrigger>
+                      <div className='flex items-center gap-2'>
+                        <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                        <SelectValue placeholder="All Statuses" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      {Object.entries(statusConfig).map(([status, config]) => (
+                        <SelectItem key={status} value={status}>{config.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Filter guests by status</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
       </div>
       <ScrollArea className="flex-1">
-        <div className="p-2 space-y-1">
+        <div className="p-2 space-y-1" id="guest-list">
             {guests.map((guest) => {
               const latestStay = guest.stayHistory[guest.stayHistory.length - 1];
               const guestStatus = statusConfig[guest.status];
