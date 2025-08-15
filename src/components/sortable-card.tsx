@@ -1,6 +1,7 @@
 
 'use client';
 
+import * as React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
@@ -56,5 +57,3 @@ export function SortableCard({ id, children }: SortableCardProps) {
     </div>
   );
 }
-
-    
