@@ -1,6 +1,6 @@
 import type { Guest, GuestSource, Feedback } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase, Globe, Languages, Home, MessageSquare, Star, MessageCircle, Frown } from 'lucide-react';
+import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase, Globe, Languages, Home, MessageSquare, Star, MessageCircle, Frown, Building } from 'lucide-react';
 import { AIPredictions } from './ai-predictions';
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -161,6 +161,35 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
         <AIPredictions guest={guest} />
       </div>
       
+       {/* Stay History Card */}
+      <Card className="shadow-soft">
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <History className="h-5 w-5" />
+              Stay History
+            </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {guest.stayHistory.length > 0 ? (
+            <div className="space-y-4">
+              {guest.stayHistory.slice().reverse().map((stay, index) => (
+                  <div key={index} className="flex items-start gap-4 text-sm">
+                    <Building className="h-5 w-5 mt-0.5 shrink-0 text-primary" />
+                    <div className="flex-1">
+                      <p className="font-semibold">{stay.hotelName}</p>
+                      <p className="text-muted-foreground">
+                        {stay.checkInDate} to {stay.checkOutDate} &middot; Room {stay.roomNumber}
+                      </p>
+                    </div>
+                  </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No stay history recorded.</p>
+          )}
+        </CardContent>
+      </Card>
+      
        {/* Guest Feedback Card */}
       <Card className="shadow-soft">
         <CardHeader>
@@ -223,3 +252,5 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
     </div>
   );
 }
+
+    
