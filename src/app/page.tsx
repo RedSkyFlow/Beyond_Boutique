@@ -12,6 +12,7 @@ import { AppTour } from '@/components/app-tour';
 import { GuestImportDialog } from '@/components/guest-import-dialog';
 import { format } from 'date-fns';
 import type { Filters } from '@/types';
+import { cn } from '@/lib/utils';
 
 const hotels = [
   'Last Word Madikwe',
@@ -43,7 +44,8 @@ export default function Home() {
   useEffect(() => {
     const guestsData = initialGuests();
     setAllGuests(guestsData);
-    if (guestsData.length > 0) {
+    // Don't auto-select on mobile, but do on desktop
+    if (window.innerWidth >= 768 && guestsData.length > 0) {
       setSelectedGuestId(guestsData[0].id);
     }
     setIsClient(true);
@@ -171,7 +173,7 @@ export default function Home() {
   if (!isClient) {
     return (
         <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
-            <div className="flex-1 grid grid-cols-[350px_1fr] overflow-hidden">
+            <div className="flex-1 grid md:grid-cols-[350px_1fr] overflow-hidden">
                 {/* Skeleton for GuestList */}
                 <div className="flex flex-col h-full bg-card border-r p-4 space-y-4">
                     <Skeleton className="h-8 w-2/3" />
@@ -188,7 +190,7 @@ export default function Home() {
                     </div>
                 </div>
                 {/* Skeleton for GuestDetails */}
-                <div className="p-4 space-y-4">
+                <div className="hidden md:block p-4 space-y-4">
                     <Skeleton className="h-32 w-full" />
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <Skeleton className="h-40 w-full" />
@@ -206,22 +208,44 @@ export default function Home() {
     <>
       <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
         <div className="flex flex-1 overflow-hidden">
-          <GuestList
-            guests={filteredGuests}
-            selectedGuestId={selectedGuestId}
-            onSelectGuest={handleSelectGuest}
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onClearFilters={clearAllFilters}
-            filterOptions={{ hotels, statuses, loyaltyTiers, sources }}
-            onStartTour={() => setIsTourOpen(true)}
-            onImportClick={() => setIsImportOpen(true)}
-          />
-          <div className="bg-background flex-1 flex flex-col" id="guest-details-panel">
+          <div
+            className={cn(
+              'w-full md:w-[350px] md:flex-shrink-0',
+              'transition-transform duration-300 ease-in-out md:transform-none',
+              {
+                '-translate-x-full': selectedGuestId,
+                'translate-x-0': !selectedGuestId,
+              }
+            )}
+          >
+            <GuestList
+              guests={filteredGuests}
+              selectedGuestId={selectedGuestId}
+              onSelectGuest={handleSelectGuest}
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onClearFilters={clearAllFilters}
+              filterOptions={{ hotels, statuses, loyaltyTiers, sources }}
+              onStartTour={() => setIsTourOpen(true)}
+              onImportClick={() => setIsImportOpen(true)}
+            />
+          </div>
+          <div
+            className={cn(
+              'bg-background flex-1 flex flex-col',
+              'absolute inset-0 md:relative',
+              'transition-transform duration-300 ease-in-out md:transform-none',
+              {
+                'translate-x-full': !selectedGuestId,
+                'translate-x-0': selectedGuestId,
+              }
+            )}
+            id="guest-details-panel"
+          >
             {selectedGuest ? (
-              <GuestDetails guest={selectedGuest} />
+              <GuestDetails guest={selectedGuest} onBack={() => setSelectedGuestId(null)} />
             ) : (
-              <div className="flex items-center justify-center h-full">
+              <div className="hidden md:flex items-center justify-center h-full">
                 <Card className="w-full max-w-md shadow-soft">
                   <CardContent className="p-8 text-center">
                     <h3 className="text-lg font-semibold">No Guest Selected</h3>
@@ -247,3 +271,5 @@ export default function Home() {
     </>
   );
 }
+
+    

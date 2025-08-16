@@ -3,19 +3,21 @@
 
 import type { Guest, GuestSource, Feedback } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase, Globe, Languages, Home, MessageSquare, Star, MessageCircle, Frown, Building, PawPrint, Baby, Users } from 'lucide-react';
+import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase, Globe, Languages, Home, MessageSquare, Star, MessageCircle, Frown, Building, PawPrint, Baby, Users, ArrowLeft } from 'lucide-react';
 import { AIPredictions } from './ai-predictions';
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import React, { useState } from 'react';
-import { DndContext, closestCenter, type DragEndEvent, DragOverlay } from '@dnd-kit/core';
+import { DndContext, closestCenter, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableCard } from './sortable-card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from './ui/button';
 
 
 interface GuestDetailsProps {
   guest: Guest;
+  onBack: () => void;
 }
 
 const sourceConfig: Record<GuestSource, { label: string; icon: LucideIcon }> = {
@@ -33,7 +35,7 @@ const feedbackConfig: Record<Feedback['type'], { icon: LucideIcon, color: string
   'Comment': { icon: MessageSquare, color: 'text-gray-500' },
 }
 
-export function GuestDetails({ guest }: GuestDetailsProps) {
+export function GuestDetails({ guest, onBack }: GuestDetailsProps) {
   const [cardOrder, setCardOrder] = useState<string[]>([
     'currentStay', 'onSiteActivity', 'preferences', 'aiPredictions', 'stayHistory', 'feedback', 'communication'
   ]);
@@ -243,7 +245,13 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
       <div className="p-4 border-b">
         <Card className="shadow-soft">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold">{guest.name}</CardTitle>
+             <div className="flex items-center gap-4">
+               <Button variant="ghost" size="icon" className="md:hidden h-8 w-8" onClick={onBack}>
+                 <ArrowLeft className="h-5 w-5" />
+                 <span className="sr-only">Back</span>
+               </Button>
+               <CardTitle className="text-3xl font-bold">{guest.name}</CardTitle>
+             </div>
             <div className="flex flex-wrap items-center text-sm text-muted-foreground mt-2 gap-x-6 gap-y-2">
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
@@ -316,3 +324,5 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
     </div>
   );
 }
+
+    
