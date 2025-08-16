@@ -3,7 +3,7 @@
 
 import type { Guest, GuestSource, Feedback } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase, Globe, Languages, Home, MessageSquare, Star, MessageCircle, Frown, Building } from 'lucide-react';
+import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase, Globe, Languages, Home, MessageSquare, Star, MessageCircle, Frown, Building, PawPrint, Baby, Users } from 'lucide-react';
 import { AIPredictions } from './ai-predictions';
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -50,6 +50,11 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
       });
     }
   };
+  
+  const currentStay = guest.status === 'Checked-in' || guest.status === 'Arriving Soon'
+    ? guest.stayHistory[guest.stayHistory.length - 1]
+    : null;
+
 
   const cards: Record<string, { component: React.ReactNode }> = {
     currentStay: {
@@ -58,19 +63,33 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
               <Calendar className="h-5 w-5" />
-              Current Stay
+              {guest.status === 'Arriving Soon' ? 'Upcoming Stay' : 'Current Stay'}
             </CardTitle>
-            {guest.stayHistory.length > 0 && <CardDescription>{guest.stayHistory[guest.stayHistory.length - 1].hotelName}</CardDescription>}
+            {currentStay && <CardDescription>{currentStay.hotelName}</CardDescription>}
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            {guest.stayHistory.length > 0 ? (
-                <>
-                    <p className="flex items-center gap-2"><span className="font-semibold w-28">Check-in:</span> {guest.stayHistory[guest.stayHistory.length - 1].checkInDate}</p>
-                    <p className="flex items-center gap-2"><span className="font-semibold w-28">Check-out:</span> {guest.stayHistory[guest.stayHistory.length - 1].checkOutDate}</p>
-                    <p className="flex items-center gap-2"><span className="font-semibold w-28">Room Number:</span> {guest.stayHistory[guest.stayHistory.length - 1].roomNumber}</p>
-                </>
+            {currentStay ? (
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                    <p className="flex items-center gap-2 col-span-2"><span className="font-semibold w-24">Check-in:</span> {currentStay.checkInDate}</p>
+                    <p className="flex items-center gap-2 col-span-2"><span className="font-semibold w-24">Check-out:</span> {currentStay.checkOutDate}</p>
+                    <p className="flex items-center gap-2 col-span-2"><span className="font-semibold w-24">Room:</span> {currentStay.roomNumber}</p>
+                    
+                    {currentStay.partySize !== undefined && (
+                      <p className="flex items-center gap-2 text-muted-foreground"><Users className="h-4 w-4" /> Party of {currentStay.partySize}</p>
+                    )}
+                    {currentStay.children !== undefined && currentStay.children > 0 && (
+                      <p className="flex items-center gap-2 text-muted-foreground"><Baby className="h-4 w-4" /> {currentStay.children} {currentStay.children === 1 ? 'Child' : 'Children'}</p>
+                    )}
+                    {currentStay.pets && (
+                      <p className="flex items-center gap-2 text-muted-foreground"><PawPrint className="h-4 w-4" /> Pet-friendly</p>
+                    )}
+                </div>
             ) : (
-                <p className="text-sm text-muted-foreground">This prospect has not stayed with us yet.</p>
+                <p className="text-sm text-muted-foreground">
+                  {guest.status === 'Prospect' 
+                    ? 'This prospect has not stayed with us yet.'
+                    : 'No current or upcoming stay information.'}
+                </p>
             )}
           </CardContent>
         </Card>
