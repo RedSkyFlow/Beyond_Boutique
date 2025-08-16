@@ -84,7 +84,15 @@ export function MultiSelectFilter({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[240px] p-0" align="start">
-          <Command>
+          <Command
+            // This prop prevents the popover from closing after a selection is made
+            onKeyDown={(e) => {
+              if (e.key === 'Escape' || e.key === 'Enter') {
+                e.preventDefault();
+                setOpen(false);
+              }
+            }}
+          >
             <CommandList>
               <CommandGroup>
                 {options.map((option) => {
