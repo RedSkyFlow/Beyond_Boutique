@@ -54,7 +54,7 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
   const cards: Record<string, { component: React.ReactNode }> = {
     currentStay: {
       component: (
-        <Card className="shadow-soft w-full">
+        <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
               <Calendar className="h-5 w-5" />
@@ -78,7 +78,7 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
     },
     onSiteActivity: {
       component: (
-        <Card className="shadow-soft w-full">
+        <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
               <Wifi className="h-5 w-5" />
@@ -107,7 +107,7 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
     },
     preferences: {
       component: (
-        <Card className="shadow-soft w-full">
+        <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="text-xl">Guest Preferences</CardTitle>
           </CardHeader>
@@ -122,7 +122,7 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
     },
     stayHistory: {
       component: (
-        <Card className="shadow-soft w-full">
+        <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
               <History className="h-5 w-5" />
@@ -153,7 +153,7 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
     },
     feedback: {
       component: (
-        <Card className="shadow-soft w-full">
+        <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
               <MessageSquare className="h-5 w-5" />
@@ -191,7 +191,7 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
     },
     communication: {
       component: (
-        <Card className="shadow-soft w-full">
+        <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
               <History className="h-5 w-5" />
@@ -283,7 +283,7 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
         <div className="p-4">
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={cardOrder} strategy={verticalListSortingStrategy}>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
                 {cardOrder.map((id) => (
                   <SortableCard key={id} id={id}>
                     {cards[id].component}
