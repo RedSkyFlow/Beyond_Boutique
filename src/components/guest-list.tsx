@@ -10,6 +10,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Button } from '@/components/ui/button';
 import type { LucideIcon } from 'lucide-react';
 import { MultiSelectFilter } from './multi-select-filter';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Badge } from './ui/badge';
+import { Label } from './ui/label';
+import { Separator } from './ui/separator';
 
 interface GuestListProps {
   guests: Guest[];
@@ -17,6 +21,7 @@ interface GuestListProps {
   onSelectGuest: (guestId: string) => void;
   filters: Filters;
   onFilterChange: <K extends keyof Filters>(filterName: K, value: Filters[K]) => void;
+  onClearFilters: () => void;
   filterOptions: {
     hotels: string[];
     statuses: GuestStatus[];
@@ -49,10 +54,18 @@ export function GuestList({
   onSelectGuest,
   filters,
   onFilterChange,
+  onClearFilters,
   filterOptions,
   onStartTour,
   onImportClick,
 }: GuestListProps) {
+  const activeFilterCount = Object.values(filters).reduce((count, value) => {
+    if (Array.isArray(value) && value.length > 0) {
+      return count + value.length;
+    }
+    return count;
+  }, 0);
+
 
   return (
     <div className="flex flex-col h-full bg-card border-r w-[350px]">
@@ -78,48 +91,78 @@ export function GuestList({
             </TooltipProvider>
            </div>
         </div>
-        <div className="relative" id="search-bar">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search guests..."
-            className="pl-9"
-            value={filters.search}
-            onChange={(e) => onFilterChange('search', e.target.value)}
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-           <MultiSelectFilter
-              id="hotel-filter"
-              placeholder="All Hotels"
-              icon={Building}
-              options={filterOptions.hotels.map(h => ({ value: h, label: h.replace('Last Word ', '') }))}
-              selectedValues={filters.hotel}
-              onChange={(values) => onFilterChange('hotel', values)}
-            />
-            <MultiSelectFilter
-              id="status-filter"
-              placeholder="All Statuses"
-              icon={SlidersHorizontal}
-              options={filterOptions.statuses.map(s => ({ value: s, label: s }))}
-              selectedValues={filters.status}
-              onChange={(values) => onFilterChange('status', values)}
-            />
-             <MultiSelectFilter
-              id="loyalty-filter"
-              placeholder="All Tiers"
-              icon={Award}
-              options={filterOptions.loyaltyTiers.map(t => ({ value: t, label: t }))}
-              selectedValues={filters.loyaltyTier}
-              onChange={(values) => onFilterChange('loyaltyTier', values)}
-            />
-            <MultiSelectFilter
-              id="source-filter"
-              placeholder="All Sources"
-              icon={Package}
-              options={filterOptions.sources.map(s => ({ value: s, label: s }))}
-              selectedValues={filters.source}
-              onChange={(values) => onFilterChange('source', values)}
-            />
+        <div className="flex items-center gap-2">
+            <div className="relative flex-1" id="search-bar">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search guests..."
+                className="pl-9 h-10"
+                value={filters.search}
+                onChange={(e) => onFilterChange('search', e.target.value)}
+              />
+            </div>
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" className="h-10 relative" id="filter-popover-trigger">
+                        <SlidersHorizontal className="h-4 w-4 mr-2" />
+                        Filter
+                        {activeFilterCount > 0 && (
+                            <Badge variant="secondary" className="absolute -top-2 -right-2 h-5 w-5 justify-center p-0 rounded-full">
+                                {activeFilterCount}
+                            </Badge>
+                        )}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[280px] p-4 space-y-4" align="end">
+                    <div className="flex items-center justify-between">
+                        <h4 className="font-medium">Filter Guests</h4>
+                        <Button variant="link" size="sm" className="p-0 h-auto" onClick={onClearFilters}>Clear all</Button>
+                    </div>
+                    <div className="space-y-4">
+                        <div>
+                            <Label>Hotel</Label>
+                             <MultiSelectFilter
+                              id="hotel-filter"
+                              placeholder="Select hotels..."
+                              options={filterOptions.hotels.map(h => ({ value: h, label: h.replace('Last Word ', '') }))}
+                              selectedValues={filters.hotel}
+                              onChange={(values) => onFilterChange('hotel', values)}
+                            />
+                        </div>
+                         <div>
+                            <Label>Status</Label>
+                            <MultiSelectFilter
+                              id="status-filter"
+                              placeholder="Select statuses..."
+                              options={filterOptions.statuses.map(s => ({ value: s, label: s }))}
+                              selectedValues={filters.status}
+                              onChange={(values) => onFilterChange('status', values)}
+                            />
+                        </div>
+                         <Separator />
+                         <div>
+                            <Label>Loyalty Tier</Label>
+                             <MultiSelectFilter
+                              id="loyalty-filter"
+                              placeholder="Select tiers..."
+                              options={filterOptions.loyaltyTiers.map(t => ({ value: t, label: t }))}
+                              selectedValues={filters.loyaltyTier}
+                              onChange={(values) => onFilterChange('loyaltyTier', values)}
+                            />
+                        </div>
+                         <div>
+                            <Label>Source</Label>
+                            <MultiSelectFilter
+                              id="source-filter"
+                              placeholder="Select sources..."
+                              options={filterOptions.sources.map(s => ({ value: s, label: s }))}
+                              selectedValues={filters.source}
+                              onChange={(values) => onFilterChange('source', values)}
+                            />
+                        </div>
+                    </div>
+                </PopoverContent>
+            </Popover>
         </div>
       </div>
       <ScrollArea className="flex-1">

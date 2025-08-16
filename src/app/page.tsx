@@ -11,7 +11,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AppTour } from '@/components/app-tour';
 import { GuestImportDialog } from '@/components/guest-import-dialog';
 import { format } from 'date-fns';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import type { Filters } from '@/types';
 
 const hotels = [
@@ -55,6 +54,16 @@ export default function Home() {
     value: Filters[K]
   ) => {
     setFilters((prevFilters) => ({ ...prevFilters, [filterName]: value }));
+  };
+  
+  const clearAllFilters = () => {
+    setFilters({
+      search: filters.search, // Keep search term
+      status: [],
+      hotel: [],
+      loyaltyTier: [],
+      source: [],
+    });
   };
 
   const filteredGuests = useMemo(() => {
@@ -203,6 +212,7 @@ export default function Home() {
             onSelectGuest={handleSelectGuest}
             filters={filters}
             onFilterChange={handleFilterChange}
+            onClearFilters={clearAllFilters}
             filterOptions={{ hotels, statuses, loyaltyTiers, sources }}
             onStartTour={() => setIsTourOpen(true)}
             onImportClick={() => setIsImportOpen(true)}

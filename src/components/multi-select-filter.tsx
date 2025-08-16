@@ -3,33 +3,24 @@
 
 import * as React from 'react';
 import { X, Check } from 'lucide-react';
-
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from './ui/button';
 import type { LucideIcon } from 'lucide-react';
 
 interface MultiSelectFilterProps {
   id?: string;
   placeholder: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   options: {
     label: string;
     value: string;
   }[];
   selectedValues: string[];
   onChange: (selectedValues: string[]) => void;
+  className?: string;
 }
 
 export function MultiSelectFilter({
@@ -39,6 +30,7 @@ export function MultiSelectFilter({
   options,
   selectedValues,
   onChange,
+  className,
 }: MultiSelectFilterProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -50,16 +42,16 @@ export function MultiSelectFilter({
   };
 
   return (
-    <div id={id}>
+    <div id={id} className={className}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             size="sm"
-            className="h-10 w-full justify-start font-normal bg-background"
+            className="h-9 w-full justify-start font-normal bg-background"
           >
-            <div className="flex items-center gap-2">
-              <Icon className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-2 truncate">
+              {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
               <div className="flex-1 text-left">
                 {selectedValues.length > 0 ? (
                   <div className="flex flex-wrap gap-1">
@@ -91,7 +83,7 @@ export function MultiSelectFilter({
             </div>
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0" align="start">
+        <PopoverContent className="w-[240px] p-0" align="start">
           <Command>
             <CommandList>
               <CommandGroup>
@@ -100,7 +92,15 @@ export function MultiSelectFilter({
                   return (
                     <CommandItem
                       key={option.value}
-                      onSelect={() => handleSelect(option.value)}
+                      onSelect={(currentValue) => {
+                        // This prevents the popover from closing
+                      }}
+                      // We use onMouseDown because onClick/onSelect are not reliable with cmdk
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleSelect(option.value);
+                      }}
                     >
                       <div
                         className={cn(
@@ -118,18 +118,6 @@ export function MultiSelectFilter({
                 })}
               </CommandGroup>
             </CommandList>
-            {selectedValues.length > 0 && (
-                <div className="p-1">
-                    <Button
-                        onClick={() => onChange([])}
-                        className="w-full"
-                        variant="ghost"
-                        size="sm"
-                    >
-                        Clear filters
-                    </Button>
-                </div>
-            )}
           </Command>
         </PopoverContent>
       </Popover>
