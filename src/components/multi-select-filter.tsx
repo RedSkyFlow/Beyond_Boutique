@@ -92,15 +92,7 @@ export function MultiSelectFilter({
                   return (
                     <CommandItem
                       key={option.value}
-                      onSelect={(currentValue) => {
-                        // This prevents the popover from closing
-                      }}
-                      // We use onMouseDown because onClick/onSelect are not reliable with cmdk
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleSelect(option.value);
-                      }}
+                      onSelect={() => handleSelect(option.value)}
                     >
                       <div
                         className={cn(
