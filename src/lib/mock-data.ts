@@ -426,5 +426,73 @@ Prefers champagne on arrival.`,
       ],
       feedback: []
     },
+    {
+      id: 'prospect-1',
+      name: 'Fatima Al-Jamil',
+      email: 'fatima.aj@example.com',
+      phone: '555-0113',
+      status: 'Prospect',
+      source: 'Tourism Expo',
+      totalStays: 0,
+      loyaltyTier: 'Member',
+      age: 38,
+      occupation: 'Doctor',
+      homeTown: 'Dubai, UAE',
+      language: 'Arabic, English',
+      stayHistory: [],
+      preferences: 'Inquired about family-friendly safari packages and accessibility for elderly parents.',
+      onSiteActivity: { firstSeen: 'N/A', lastSeen: 'N/A', connectedDevices: [] },
+      communicationHistory: [
+        { date: format(sub(today, { weeks: 2 }), 'yyyy-MM-dd'), log: 'Met at World Travel Market expo.' },
+        { date: format(sub(today, { weeks: 1 }), 'yyyy-MM-dd'), log: 'Sent follow-up email with family package brochure.' },
+      ],
+      feedback: []
+    },
+    {
+      id: 'prospect-2',
+      name: 'David Chen',
+      email: 'david.c@example.com',
+      phone: '555-0114',
+      status: 'Prospect',
+      source: 'Manual Entry',
+      totalStays: 0,
+      loyaltyTier: 'Member',
+      age: 45,
+      occupation: 'Venture Capitalist',
+      homeTown: 'Singapore',
+      language: 'Mandarin, English',
+      stayHistory: [],
+      preferences: 'Referred by Eleanor Vance. Interested in exclusive-use villas for a corporate retreat.',
+      onSiteActivity: { firstSeen: 'N/A', lastSeen: 'N/A', connectedDevices: [] },
+      communicationHistory: [
+        { date: format(sub(today, { days: 5 }), 'yyyy-MM-dd'), log: 'Initial inquiry received via email.' },
+      ],
+      feedback: []
+    },
+    {
+      id: 'prospect-3',
+      name: 'Isabella Johansson',
+      email: 'isabella.j@example.com',
+      phone: '555-0115',
+      status: 'Prospect',
+      source: 'Purple WiFi',
+      totalStays: 0,
+      loyaltyTier: 'Member',
+      age: 29,
+      occupation: 'Freelance Writer',
+      homeTown: 'Stockholm, Sweden',
+      language: 'Swedish, English',
+      stayHistory: [],
+      preferences: 'Connected to WiFi at Last Word Constantia while visiting the restaurant. Downloaded a wine-tasting guide.',
+      onSiteActivity: {
+        firstSeen: format(sub(today, { days: 20, hours: 4 }), 'yyyy-MM-dd, HH:mm'),
+        lastSeen: format(sub(today, { days: 20, hours: 2 }), 'yyyy-MM-dd, HH:mm'),
+        connectedDevices: ['iPhone 14 Pro']
+      },
+      communicationHistory: [
+        { date: format(sub(today, { days: 19 }), 'yyyy-MM-dd'), log: 'Added to newsletter for local events and offers.' },
+      ],
+      feedback: []
+    },
   ];
 }
