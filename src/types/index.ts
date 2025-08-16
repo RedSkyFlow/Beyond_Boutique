@@ -1,3 +1,4 @@
+
 export interface Stay {
   hotelName: string;
   checkInDate: string;
@@ -8,6 +9,8 @@ export interface Stay {
 export type GuestStatus = 'Checked-in' | 'Arriving Soon' | 'Checked-out' | 'Prospect';
 
 export type GuestSource = 'PANstrat' | 'Booking.com' | 'Manual Entry' | 'Purple WiFi' | 'Tourism Expo';
+
+export type LoyaltyTier = 'Member' | 'Gold' | 'Platinum';
 
 export interface OnSiteActivity {
   firstSeen: string;
@@ -35,7 +38,7 @@ export interface Guest {
   status: GuestStatus;
   source: GuestSource;
   totalStays: number;
-  loyaltyTier: 'Member' | 'Gold' | 'Platinum';
+  loyaltyTier: LoyaltyTier;
   stayHistory: Stay[];
   preferences: string;
   onSiteActivity: OnSiteActivity;
@@ -45,4 +48,12 @@ export interface Guest {
   occupation?: string;
   homeTown?: string;
   language?: string;
+}
+
+export interface Filters {
+  search: string;
+  status: GuestStatus[];
+  hotel: string[];
+  loyaltyTier: LoyaltyTier[];
+  source: GuestSource[];
 }

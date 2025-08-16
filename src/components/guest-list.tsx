@@ -1,23 +1,28 @@
 
 'use client';
 
-import type { Guest, GuestStatus, GuestSource } from '@/types';
+import type { Guest, GuestStatus, GuestSource, LoyaltyTier, Filters } from '@/types';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Search, SlidersHorizontal, BedDouble, User, Building, HelpCircle, Upload, Database, FileText, UserPlus, Wifi, Briefcase } from 'lucide-react';
+import { Search, SlidersHorizontal, BedDouble, User, Building, HelpCircle, Upload, Database, FileText, UserPlus, Wifi, Briefcase, Award, Package } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import type { LucideIcon } from 'lucide-react';
+import { MultiSelectFilter } from './multi-select-filter';
 
 interface GuestListProps {
   guests: Guest[];
   selectedGuestId: string | null;
   onSelectGuest: (guestId: string) => void;
-  filters: { search: string; status: string; hotel: string };
-  onFilterChange: (filterName: string, value: string) => void;
-  hotels: string[];
+  filters: Filters;
+  onFilterChange: <K extends keyof Filters>(filterName: K, value: Filters[K]) => void;
+  filterOptions: {
+    hotels: string[];
+    statuses: GuestStatus[];
+    loyaltyTiers: LoyaltyTier[];
+    sources: GuestSource[];
+  };
   onStartTour: () => void;
   onImportClick: () => void;
 }
@@ -44,13 +49,13 @@ export function GuestList({
   onSelectGuest,
   filters,
   onFilterChange,
-  hotels,
+  filterOptions,
   onStartTour,
   onImportClick,
 }: GuestListProps) {
 
   return (
-    <div className="flex flex-col h-full bg-card border-r">
+    <div className="flex flex-col h-full bg-card border-r w-[350px]">
       <div className="p-4 space-y-4 border-b">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight">The Last Word</h1>
@@ -75,73 +80,46 @@ export function GuestList({
         </div>
         <div className="relative" id="search-bar">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                  <Input
-                    placeholder="Search guests..."
-                    className="pl-9"
-                    value={filters.search}
-                    onChange={(e) => onFilterChange('search', e.target.value)}
-                  />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Search for guests by name</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Input
+            placeholder="Search guests..."
+            className="pl-9"
+            value={filters.search}
+            onChange={(e) => onFilterChange('search', e.target.value)}
+          />
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <div id="hotel-filter">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Select value={filters.hotel} onValueChange={(value) => onFilterChange('hotel', value)}>
-                    <SelectTrigger>
-                      <div className='flex items-center gap-2'>
-                        <Building className="h-4 w-4 text-muted-foreground" />
-                        <SelectValue placeholder="All Hotels" />
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Hotels</SelectItem>
-                      {hotels.map((hotel) => (
-                        <SelectItem key={hotel} value={hotel}>{hotel.replace('Last Word ', '')}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Filter guests by hotel</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          <div id="status-filter">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Select value={filters.status} onValueChange={(value) => onFilterChange('status', value)}>
-                    <SelectTrigger>
-                      <div className='flex items-center gap-2'>
-                        <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-                        <SelectValue placeholder="All Statuses" />
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
-                      {Object.entries(statusConfig).map(([status, config]) => (
-                        <SelectItem key={status} value={status}>{config.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Filter guests by status</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+           <MultiSelectFilter
+              id="hotel-filter"
+              placeholder="All Hotels"
+              icon={Building}
+              options={filterOptions.hotels.map(h => ({ value: h, label: h.replace('Last Word ', '') }))}
+              selectedValues={filters.hotel}
+              onChange={(values) => onFilterChange('hotel', values)}
+            />
+            <MultiSelectFilter
+              id="status-filter"
+              placeholder="All Statuses"
+              icon={SlidersHorizontal}
+              options={filterOptions.statuses.map(s => ({ value: s, label: s }))}
+              selectedValues={filters.status}
+              onChange={(values) => onFilterChange('status', values)}
+            />
+             <MultiSelectFilter
+              id="loyalty-filter"
+              placeholder="All Tiers"
+              icon={Award}
+              options={filterOptions.loyaltyTiers.map(t => ({ value: t, label: t }))}
+              selectedValues={filters.loyaltyTier}
+              onChange={(values) => onFilterChange('loyaltyTier', values)}
+            />
+            <MultiSelectFilter
+              id="source-filter"
+              placeholder="All Sources"
+              icon={Package}
+              options={filterOptions.sources.map(s => ({ value: s, label: s }))}
+              selectedValues={filters.source}
+              onChange={(values) => onFilterChange('source', values)}
+            />
         </div>
       </div>
       <ScrollArea className="flex-1">

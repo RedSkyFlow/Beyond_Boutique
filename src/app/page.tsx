@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { guests as initialGuests } from '@/lib/mock-data';
-import type { Guest, GuestSource, GuestStatus } from '@/types';
+import type { Guest, GuestSource, GuestStatus, LoyaltyTier } from '@/types';
 import { GuestList } from '@/components/guest-list';
 import { GuestDetails } from '@/components/guest-details';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,6 +12,7 @@ import { AppTour } from '@/components/app-tour';
 import { GuestImportDialog } from '@/components/guest-import-dialog';
 import { format } from 'date-fns';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import type { Filters } from '@/types';
 
 const hotels = [
   'Last Word Madikwe',
@@ -22,13 +23,19 @@ const hotels = [
   'Last Word Kalahari',
 ];
 
+const statuses: GuestStatus[] = ['Checked-in', 'Arriving Soon', 'Checked-out', 'Prospect'];
+const loyaltyTiers: LoyaltyTier[] = ['Member', 'Gold', 'Platinum'];
+const sources: GuestSource[] = ['PANstrat', 'Booking.com', 'Manual Entry', 'Purple WiFi', 'Tourism Expo'];
+
 export default function Home() {
   const [allGuests, setAllGuests] = useState<Guest[]>([]);
   const [selectedGuestId, setSelectedGuestId] = useState<string | null>(null);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Filters>({
     search: '',
-    status: 'all',
-    hotel: 'all',
+    status: [],
+    hotel: [],
+    loyaltyTier: [],
+    source: [],
   });
   const [isClient, setIsClient] = useState(false);
   const [isTourOpen, setIsTourOpen] = useState(false);
@@ -43,16 +50,22 @@ export default function Home() {
     setIsClient(true);
   }, []);
 
-  const handleFilterChange = (filterName: string, value: string) => {
+  const handleFilterChange = <K extends keyof Filters>(
+    filterName: K,
+    value: Filters[K]
+  ) => {
     setFilters((prevFilters) => ({ ...prevFilters, [filterName]: value }));
   };
-  
+
   const filteredGuests = useMemo(() => {
     return allGuests.filter((guest) => {
       const searchMatch = guest.name.toLowerCase().includes(filters.search.toLowerCase());
-      const statusMatch = filters.status === 'all' || guest.status === filters.status;
-      const hotelMatch = filters.hotel === 'all' || guest.stayHistory.some(stay => stay.hotelName === filters.hotel);
-      return searchMatch && statusMatch && hotelMatch;
+      const statusMatch = filters.status.length === 0 || filters.status.includes(guest.status);
+      const hotelMatch = filters.hotel.length === 0 || guest.stayHistory.some(stay => filters.hotel.includes(stay.hotelName));
+      const loyaltyMatch = filters.loyaltyTier.length === 0 || filters.loyaltyTier.includes(guest.loyaltyTier);
+      const sourceMatch = filters.source.length === 0 || filters.source.includes(guest.source);
+      
+      return searchMatch && statusMatch && hotelMatch && loyaltyMatch && sourceMatch;
     });
   }, [allGuests, filters]);
 
@@ -190,25 +203,28 @@ export default function Home() {
             onSelectGuest={handleSelectGuest}
             filters={filters}
             onFilterChange={handleFilterChange}
-            hotels={hotels}
+            filterOptions={{ hotels, statuses, loyaltyTiers, sources }}
             onStartTour={() => setIsTourOpen(true)}
             onImportClick={() => setIsImportOpen(true)}
           />
           <div className="bg-background flex-1 flex flex-col" id="guest-details-panel">
-              {selectedGuest ? (
-                <GuestDetails guest={selectedGuest} />
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <Card className="w-full max-w-md shadow-soft">
-                    <CardContent className="p-8 text-center">
-                      <h3 className="text-lg font-semibold">No Guest Selected</h3>
-                      <p className="text-muted-foreground mt-2">
-                        Please select a guest from the list to view their details.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
+            {selectedGuest ? (
+              <GuestDetails guest={selectedGuest} />
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <Card className="w-full max-w-md shadow-soft">
+                  <CardContent className="p-8 text-center">
+                    <h3 className="text-lg font-semibold">No Guest Selected</h3>
+                    <p className="text-muted-foreground mt-2">
+                      {filteredGuests.length > 0
+                        ? "Please select a guest from the list to view their details."
+                        : "No guests match the current filters."
+                      }
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </div>
         </div>
       </main>
