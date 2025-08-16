@@ -5,10 +5,10 @@ import * as React from 'react';
 import { X, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from './ui/button';
 import type { LucideIcon } from 'lucide-react';
+import { ScrollArea } from './ui/scroll-area';
 
 interface MultiSelectFilterProps {
   id?: string;
@@ -84,42 +84,32 @@ export function MultiSelectFilter({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[240px] p-0" align="start">
-          <Command
-            // This prop prevents the popover from closing after a selection is made
-            onKeyDown={(e) => {
-              if (e.key === 'Escape' || e.key === 'Enter') {
-                e.preventDefault();
-                setOpen(false);
-              }
-            }}
-          >
-            <CommandList>
-              <CommandGroup>
-                {options.map((option) => {
-                  const isSelected = selectedValues.includes(option.value);
-                  return (
-                    <CommandItem
-                      key={option.value}
-                      onSelect={() => handleSelect(option.value)}
-                      className="cursor-pointer"
+          <ScrollArea className="max-h-60">
+            <div className="p-1">
+              {options.map((option) => {
+                const isSelected = selectedValues.includes(option.value);
+                return (
+                  <div
+                    key={option.value}
+                    onClick={() => handleSelect(option.value)}
+                    className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
+                  >
+                    <div
+                      className={cn(
+                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                        isSelected
+                          ? 'bg-primary text-primary-foreground'
+                          : 'opacity-50 [&_svg]:invisible'
+                      )}
                     >
-                      <div
-                        className={cn(
-                          'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
-                          isSelected
-                            ? 'bg-primary text-primary-foreground'
-                            : 'opacity-50 [&_svg]:invisible'
-                        )}
-                      >
-                        <Check className={cn('h-4 w-4')} />
-                      </div>
-                      <span>{option.label}</span>
-                    </CommandItem>
-                  );
-                })}
-              </CommandGroup>
-            </CommandList>
-          </Command>
+                      <Check className={cn('h-4 w-4')} />
+                    </div>
+                    <span>{option.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </ScrollArea>
         </PopoverContent>
       </Popover>
     </div>
