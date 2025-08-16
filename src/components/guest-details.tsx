@@ -67,14 +67,14 @@ export function GuestDetails({ guest, onBack }: GuestDetailsProps) {
               <Calendar className="h-5 w-5" />
               {guest.status === 'Arriving Soon' ? 'Upcoming Stay' : 'Current Stay'}
             </CardTitle>
-            {currentStay && <CardDescription>{currentStay.hotelName}</CardDescription>}
+            {currentStay && <CardDescription>{currentStay.hotel}</CardDescription>}
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             {currentStay ? (
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                     <p className="flex items-center gap-2 col-span-2"><span className="font-semibold w-24">Check-in:</span> {currentStay.checkInDate}</p>
                     <p className="flex items-center gap-2 col-span-2"><span className="font-semibold w-24">Check-out:</span> {currentStay.checkOutDate}</p>
-                    <p className="flex items-center gap-2 col-span-2"><span className="font-semibold w-24">Room:</span> {currentStay.roomNumber}</p>
+                    <p className="flex items-center gap-2 col-span-2"><span className="font-semibold w-24">Room:</span> {currentStay.room}</p>
                     
                     {currentStay.partySize !== undefined && (
                       <p className="flex items-center gap-2 text-muted-foreground"><Users className="h-4 w-4" /> Party of {currentStay.partySize}</p>
@@ -157,9 +157,9 @@ export function GuestDetails({ guest, onBack }: GuestDetailsProps) {
                     <div key={index} className="flex items-start gap-4 text-sm">
                       <Building className="h-5 w-5 mt-0.5 shrink-0 text-primary" />
                       <div className="flex-1">
-                        <p className="font-semibold">{stay.hotelName}</p>
+                        <p className="font-semibold">{stay.hotel}</p>
                         <p className="text-muted-foreground">
-                          {stay.checkInDate} to {stay.checkOutDate} &middot; Room {stay.roomNumber}
+                          {stay.checkInDate} to {stay.checkOutDate} &middot; Room {stay.room}
                         </p>
                       </div>
                     </div>
@@ -324,5 +324,3 @@ export function GuestDetails({ guest, onBack }: GuestDetailsProps) {
     </div>
   );
 }
-
-    

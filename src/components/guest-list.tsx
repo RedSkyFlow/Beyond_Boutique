@@ -68,7 +68,7 @@ export function GuestList({
 
 
   return (
-    <div className="flex flex-col h-full bg-card border-r w-[350px]">
+    <div className="flex flex-col h-full bg-card border-r w-full md:w-[350px]">
       <div className="p-4 space-y-4 border-b">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight">The Last Word</h1>
@@ -207,7 +207,7 @@ export function GuestList({
                   <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                     <div className='flex items-center gap-1.5'>
                       <BedDouble className="h-3.5 w-3.5" />
-                      <span>Room {latestStay.roomNumber}</span>
+                      <span>Room {latestStay.room}</span>
                     </div>
                      <div className='flex items-center gap-1.5'>
                       <User className="h-3.5 w-3.5" />

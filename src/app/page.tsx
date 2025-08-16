@@ -72,7 +72,7 @@ export default function Home() {
     return allGuests.filter((guest) => {
       const searchMatch = guest.name.toLowerCase().includes(filters.search.toLowerCase());
       const statusMatch = filters.status.length === 0 || filters.status.includes(guest.status);
-      const hotelMatch = filters.hotel.length === 0 || guest.stayHistory.some(stay => filters.hotel.includes(stay.hotelName));
+      const hotelMatch = filters.hotel.length === 0 || guest.stayHistory.some(stay => filters.hotel.includes(stay.hotel));
       const loyaltyMatch = filters.loyaltyTier.length === 0 || filters.loyaltyTier.includes(guest.loyaltyTier);
       const sourceMatch = filters.source.length === 0 || filters.source.includes(guest.source);
       
@@ -122,8 +122,8 @@ export default function Home() {
                 };
                 newGuests.push(guest);
             } else if (columns.length >= 7) {
-                // Guest with stay format: name,email,phone,hotelName,roomNumber,checkIn,checkOut
-                const [,,, hotelName, roomNumber, checkIn, checkOut] = columns;
+                // Guest with stay format: name,email,phone,hotel,room,checkIn,checkOut
+                const [,,, hotel, room, checkIn, checkOut] = columns;
                 const checkInDate = new Date(checkIn);
                 let status: GuestStatus;
                 if (checkInDate > today) {
@@ -143,8 +143,8 @@ export default function Home() {
                     loyaltyTier: 'Member',
                     preferences: 'Newly imported guest.',
                     stayHistory: [{
-                        hotelName,
-                        roomNumber,
+                        hotel,
+                        room,
                         checkInDate: format(checkInDate, 'yyyy-MM-dd'),
                         checkOutDate: format(new Date(checkOut), 'yyyy-MM-dd'),
                     }],
@@ -271,5 +271,3 @@ export default function Home() {
     </>
   );
 }
-
-    
