@@ -194,8 +194,7 @@ export default function Home() {
             onStartTour={() => setIsTourOpen(true)}
             onImportClick={() => setIsImportOpen(true)}
           />
-          <ScrollArea className="bg-background flex-1" id="guest-details-panel">
-            <div className="p-4">
+          <div className="bg-background flex-1 flex flex-col" id="guest-details-panel">
               {selectedGuest ? (
                 <GuestDetails guest={selectedGuest} />
               ) : (
@@ -210,8 +209,7 @@ export default function Home() {
                   </Card>
                 </div>
               )}
-            </div>
-          </ScrollArea>
+          </div>
         </div>
       </main>
       <AppTour isOpen={isTourOpen} onOpenChange={setIsTourOpen} />

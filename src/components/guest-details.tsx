@@ -11,6 +11,7 @@ import React, { useState } from 'react';
 import { DndContext, closestCenter, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableCard } from './sortable-card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 
 interface GuestDetailsProps {
@@ -218,76 +219,81 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
 
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col h-full">
       {/* Guest Header Card */}
-      <Card className="shadow-soft">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold">{guest.name}</CardTitle>
-          <div className="flex flex-wrap items-center text-sm text-muted-foreground mt-2 gap-x-6 gap-y-2">
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              <span>{guest.email}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4" />
-              <span>{guest.phone}</span>
-            </div>
-            {guest.homeTown && (
-                <div className="flex items-center gap-2">
-                    <Home className="h-4 w-4" />
-                    <span>{guest.homeTown}</span>
-                </div>
-            )}
-          </div>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm">
-            {guest.totalStays > 0 && (
+      <div className="p-4 border-b">
+        <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold">{guest.name}</CardTitle>
+            <div className="flex flex-wrap items-center text-sm text-muted-foreground mt-2 gap-x-6 gap-y-2">
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-primary" />
-                <span>{guest.totalStays} {guest.totalStays === 1 ? 'Stay' : 'Stays'}</span>
+                <Mail className="h-4 w-4" />
+                <span>{guest.email}</span>
               </div>
-            )}
-            <div className="flex items-center gap-2">
-              <Award className="h-4 w-4 text-primary" />
-              <span>Loyalty Tier: {guest.loyaltyTier}</span>
+              <div className="flex items-center gap-2">
+                <Phone className="h-4 w-4" />
+                <span>{guest.phone}</span>
+              </div>
+              {guest.homeTown && (
+                  <div className="flex items-center gap-2">
+                      <Home className="h-4 w-4" />
+                      <span>{guest.homeTown}</span>
+                  </div>
+              )}
             </div>
-             <div className="flex items-center gap-2">
-              <Package className="h-4 w-4 text-primary" />
-              <span>Origin: {guestSource.label}</span>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm">
+              {guest.totalStays > 0 && (
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4 text-primary" />
+                  <span>{guest.totalStays} {guest.totalStays === 1 ? 'Stay' : 'Stays'}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <Award className="h-4 w-4 text-primary" />
+                <span>Loyalty Tier: {guest.loyaltyTier}</span>
+              </div>
+               <div className="flex items-center gap-2">
+                <Package className="h-4 w-4 text-primary" />
+                <span>Origin: {guestSource.label}</span>
+              </div>
+               {guest.language && (
+                  <div className="flex items-center gap-2">
+                      <Languages className="h-4 w-4 text-primary" />
+                      <span>{guest.language}</span>
+                  </div>
+              )}
+               {guest.occupation && (
+                  <div className="flex items-center gap-2">
+                      <Briefcase className="h-4 w-4 text-primary" />
+                      <span>{guest.occupation}</span>
+                  </div>
+              )}
+              {guest.age && (
+                  <div className="flex items-center gap-2">
+                      <User className="h-4 w-4 text-primary" />
+                      <span>{guest.age} years old</span>
+                  </div>
+              )}
             </div>
-             {guest.language && (
-                <div className="flex items-center gap-2">
-                    <Languages className="h-4 w-4 text-primary" />
-                    <span>{guest.language}</span>
-                </div>
-            )}
-             {guest.occupation && (
-                <div className="flex items-center gap-2">
-                    <Briefcase className="h-4 w-4 text-primary" />
-                    <span>{guest.occupation}</span>
-                </div>
-            )}
-            {guest.age && (
-                <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-primary" />
-                    <span>{guest.age} years old</span>
-                </div>
-            )}
-          </div>
-        </CardHeader>
-      </Card>
+          </CardHeader>
+        </Card>
+      </div>
       
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={cardOrder} strategy={verticalListSortingStrategy}>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {cardOrder.map((id) => (
-              <SortableCard key={id} id={id}>
-                {cards[id].component}
-              </SortableCard>
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
-      
+      <ScrollArea className="flex-1">
+        <div className="p-4">
+          <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={cardOrder} strategy={verticalListSortingStrategy}>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {cardOrder.map((id) => (
+                  <SortableCard key={id} id={id}>
+                    {cards[id].component}
+                  </SortableCard>
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </div>
+      </ScrollArea>
     </div>
   );
 }
