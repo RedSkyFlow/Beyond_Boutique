@@ -6,6 +6,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
 import { CardHeader } from './ui/card';
+import { cn } from '@/lib/utils';
+
 
 interface SortableCardProps {
   id: string;
@@ -19,6 +21,7 @@ export function SortableCard({ id, children }: SortableCardProps) {
     setNodeRef,
     transform,
     transition,
+    isDragging,
   } = useSortable({ id });
 
   const style = {
@@ -26,7 +29,6 @@ export function SortableCard({ id, children }: SortableCardProps) {
     transition,
   };
 
-  // Find the CardHeader in children and add the drag handle
   const childrenWithHandle = React.Children.map(children, (child) => {
     if (React.isValidElement(child) && (child.type === 'div' || (child.type as any).displayName === 'Card')) {
         const cardChildren = React.Children.toArray((child.props as any).children);
@@ -38,7 +40,7 @@ export function SortableCard({ id, children }: SortableCardProps) {
                 header,
                 {},
                 <>
-                    <button {...attributes} {...listeners} className="absolute top-4 right-4 p-1 text-muted-foreground cursor-grab active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-ring rounded-sm">
+                    <button {...attributes} {...listeners} className="absolute top-4 right-4 p-1 text-muted-foreground/50 hover:text-muted-foreground cursor-grab active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-ring rounded-sm transition-colors">
                         <GripVertical className="h-5 w-5" />
                     </button>
                     {header.props.children}
@@ -52,7 +54,14 @@ export function SortableCard({ id, children }: SortableCardProps) {
   });
 
   return (
-    <div ref={setNodeRef} style={style} className="relative touch-none">
+    <div 
+        ref={setNodeRef} 
+        style={style} 
+        className={cn(
+            "relative touch-none transition-opacity",
+            isDragging && 'opacity-50'
+        )}
+    >
       {childrenWithHandle}
     </div>
   );
