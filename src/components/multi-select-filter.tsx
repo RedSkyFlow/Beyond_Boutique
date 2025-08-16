@@ -93,6 +93,7 @@ export function MultiSelectFilter({
                     <CommandItem
                       key={option.value}
                       onSelect={() => handleSelect(option.value)}
+                      className="cursor-pointer"
                     >
                       <div
                         className={cn(
