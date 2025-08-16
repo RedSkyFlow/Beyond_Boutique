@@ -72,7 +72,7 @@ export default function Home() {
     return allGuests.filter((guest) => {
       const searchMatch = guest.name.toLowerCase().includes(filters.search.toLowerCase());
       const statusMatch = filters.status.length === 0 || filters.status.includes(guest.status);
-      const hotelMatch = filters.hotel.length === 0 || guest.stayHistory.some(stay => filters.hotel.includes(stay.hotel));
+      const hotelMatch = filters.hotel.length === 0 || guest.stayHistory.some(stay => filters.hotel.includes(stay.hotelName));
       const loyaltyMatch = filters.loyaltyTier.length === 0 || filters.loyaltyTier.includes(guest.loyaltyTier);
       const sourceMatch = filters.source.length === 0 || filters.source.includes(guest.source);
       
@@ -143,8 +143,8 @@ export default function Home() {
                     loyaltyTier: 'Member',
                     preferences: 'Newly imported guest.',
                     stayHistory: [{
-                        hotel,
-                        room,
+                        hotelName: hotel,
+                        roomNumber: room,
                         checkInDate: format(checkInDate, 'yyyy-MM-dd'),
                         checkOutDate: format(new Date(checkOut), 'yyyy-MM-dd'),
                     }],
@@ -207,10 +207,10 @@ export default function Home() {
   return (
     <>
       <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 overflow-hidden h-full">
           <div
             className={cn(
-              'w-full md:w-[350px] md:flex-shrink-0',
+              'h-full w-full md:w-[350px] md:flex-shrink-0',
               'transition-transform duration-300 ease-in-out md:transform-none',
               {
                 '-translate-x-full': selectedGuestId,
@@ -233,7 +233,7 @@ export default function Home() {
           <div
             className={cn(
               'bg-background flex-1 flex flex-col',
-              'absolute inset-0 md:relative',
+              'absolute inset-0 md:relative h-full',
               'transition-transform duration-300 ease-in-out md:transform-none',
               {
                 'translate-x-full': !selectedGuestId,
