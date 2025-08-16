@@ -95,7 +95,7 @@ export function GuestDetails({ guest }: GuestDetailsProps) {
                 <p className="font-semibold">Connected Devices:</p>
                 <ul className="list-disc pl-5 text-muted-foreground">
                   {guest.onSiteActivity.connectedDevices.length > 0 ? 
-                    guest.onSiteActivity.connectedDevices.map(device => <li key={device}>{device}</li>)
+                    guest.onSiteActivity.connectedDevices.map((device, index) => <li key={`${device}-${index}`}>{device}</li>)
                     : <li>None</li>
                   }
                 </ul>
