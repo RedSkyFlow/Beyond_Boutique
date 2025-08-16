@@ -13,8 +13,11 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
+const GuestStatusSchema = z.enum(['Checked-in', 'Arriving Soon', 'Checked-out', 'Prospect']);
+
 const SuggestGuestPreferencesInputSchema = z.object({
   guestHistory: z.string().describe('A detailed history of the guest, including past stays, preferences, and any available feedback.'),
+  guestStatus: GuestStatusSchema.describe("The guest's current status, which dictates the type of suggestions needed."),
 });
 export type SuggestGuestPreferencesInput = z.infer<typeof SuggestGuestPreferencesInputSchema>;
 
@@ -34,17 +37,22 @@ const prompt = ai.definePrompt({
   name: 'suggestGuestPreferencesPrompt',
   input: {schema: SuggestGuestPreferencesInputSchema},
   output: {schema: SuggestGuestPreferencesOutputSchema},
-  prompt: `You are an AI assistant for a luxury hotel group that analyzes guest history and suggests potential preferences or perks to enhance their stay.
-  
-  IMPORTANT: A "New Guest" with "Total Stays: 1" is a first-time guest currently on their first stay. Do NOT suggest "welcome back" amenities for them. Suggest "welcome" amenities instead. A "Returning Guest" has stayed before.
+  prompt: `You are an AI assistant for a luxury hotel group. Your task is to analyze guest data and provide actionable suggestions based on their current status.
 
-  Analyze the following guest history:
-  {{{guestHistory}}}
+Analyze the following guest history:
+{{{guestHistory}}}
 
-  Based on this history, provide a list of specific and personalized suggestions that would improve their experience.
-  Explain your reasoning for each suggestion.
+The guest's current status is: {{{guestStatus}}}.
 
-  Format your response as a JSON object with 'suggestions' (an array of strings) and 'reasoning' (a string explaining the suggestions). If there are no obvious suggestions based on the guest history, the 'suggestions' array can be empty, but you should still fill the reasoning.
+Your suggestions MUST be relevant to their status:
+
+- If the status is 'Prospect', provide marketing and acquisition ideas to encourage their first booking. Suggestions could include targeted offers, content ideas, or outreach strategies.
+- If the status is 'Arriving Soon' or 'Checked-in', provide personalized in-stay suggestions to enhance their current or upcoming visit. These could be perks, services, or special arrangements.
+- If the status is 'Checked-out', provide post-stay follow-up suggestions to build loyalty and encourage a return visit. This could include personalized thank-you messages, special offers for future stays, or thoughtful gifts.
+
+IMPORTANT: A "New Guest" with "Total Stays: 1" is a first-time guest. Do NOT suggest "welcome back" amenities for them if they are 'Arriving Soon' or 'Checked-in'. Suggest "welcome" amenities instead. A "Returning Guest" has stayed before.
+
+Provide a list of specific, personalized suggestions and explain your reasoning. Format your response as a JSON object with 'suggestions' and 'reasoning'. If there are no obvious suggestions, the 'suggestions' array can be empty, but you must still provide reasoning.
   `,
 });
 

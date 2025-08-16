@@ -24,11 +24,11 @@ export function AIPredictions({ guest }: AIPredictionsProps) {
     setError(null);
     setPredictions(null);
 
-    const guestStatus = guest.totalStays <= 1 ? 'New Guest' : 'Returning Guest';
+    const guestType = guest.totalStays <= 1 ? 'New Guest' : 'Returning Guest';
 
     const guestHistory = `
       Guest Name: ${guest.name}
-      Guest Status: ${guestStatus}
+      Guest Type: ${guestType}
       Total Stays: ${guest.totalStays}
       Loyalty Tier: ${guest.loyaltyTier}
       
@@ -45,7 +45,10 @@ export function AIPredictions({ guest }: AIPredictionsProps) {
     `;
 
     try {
-      const result = await suggestGuestPreferences({ guestHistory });
+      const result = await suggestGuestPreferences({ 
+        guestHistory,
+        guestStatus: guest.status 
+      });
       setPredictions(result);
     } catch (e) {
       console.error(e);
@@ -62,7 +65,7 @@ export function AIPredictions({ guest }: AIPredictionsProps) {
           <Wand2 className="h-5 w-5" />
           AI Predictions
         </CardTitle>
-        <CardDescription>Generate personalized suggestions for this guest.</CardDescription>
+        <CardDescription>Generate personalized suggestions for this guest based on their status.</CardDescription>
       </CardHeader>
       <CardContent>
         {!predictions && !isLoading && (
@@ -74,7 +77,7 @@ export function AIPredictions({ guest }: AIPredictionsProps) {
         {isLoading && (
             <div className="flex items-center text-sm text-muted-foreground">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                <span>Analyzing guest history and generating ideas...</span>
+                <span>Analyzing guest data and generating ideas...</span>
             </div>
         )}
 
@@ -89,19 +92,23 @@ export function AIPredictions({ guest }: AIPredictionsProps) {
         {predictions && (
           <div className="space-y-4 text-sm">
             <div>
-                <h4 className="font-semibold mb-2">Suggestions</h4>
-                <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-                    {predictions.suggestions.map((suggestion, index) => (
-                        <li key={index}>{suggestion}</li>
-                    ))}
-                </ul>
+                <h4 className="font-semibold mb-2">Suggestions for a <span className="text-primary">{guest.status}</span> guest</h4>
+                {predictions.suggestions.length > 0 ? (
+                    <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                        {predictions.suggestions.map((suggestion, index) => (
+                            <li key={index}>{suggestion}</li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="text-muted-foreground">No specific suggestions generated based on the guest's history.</p>
+                )}
             </div>
             <div>
                 <h4 className="font-semibold mb-2">Reasoning</h4>
                 <p className="text-muted-foreground italic">"{predictions.reasoning}"</p>
             </div>
-            <Button variant="outline" size="sm" onClick={() => setPredictions(null)}>
-              Generate Again
+            <Button variant="outline" size="sm" onClick={handleGenerateClick} disabled={isLoading}>
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Generate Again'}
             </Button>
           </div>
         )}
