@@ -207,14 +207,20 @@ export function GuestList({
                   </div>
                 </div>
                 {guest.status !== 'Prospect' && latestStay && (
-                  <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
-                    <div className='flex items-center gap-1.5'>
-                      <BedDouble className="h-3.5 w-3.5" />
-                      <span>Room {latestStay.roomNumber}</span>
+                  <div className="space-y-1.5 mt-1">
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Building className="h-3.5 w-3.5" />
+                        <span>{latestStay.hotelName}</span>
                     </div>
-                     <div className='flex items-center gap-1.5'>
-                      <User className="h-3.5 w-3.5" />
-                      <span>{guest.totalStays} {guest.totalStays === 1 ? 'Stay' : 'Stays'}</span>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <div className='flex items-center gap-1.5'>
+                        <BedDouble className="h-3.5 w-3.5" />
+                        <span>Room {latestStay.roomNumber}</span>
+                      </div>
+                      <div className='flex items-center gap-1.5'>
+                        <User className="h-3.5 w-3.5" />
+                        <span>{guest.totalStays} {guest.totalStays === 1 ? 'Stay' : 'Stays'}</span>
+                      </div>
                     </div>
                   </div>
                 )}
