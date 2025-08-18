@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { Montserrat } from 'next/font/google';
+import { GuestProvider } from '@/context/guest-context';
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -22,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${montserrat.variable} font-body antialiased`}>
-        {children}
+        <GuestProvider>
+          {children}
+        </GuestProvider>
         <Toaster />
       </body>
     </html>

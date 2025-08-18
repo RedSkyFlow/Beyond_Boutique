@@ -3,7 +3,7 @@
 
 import type { Guest, GuestSource, Feedback } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase, Globe, Languages, Home, MessageSquare, Star, MessageCircle, Frown, Building, PawPrint, Baby, Users, ArrowLeft } from 'lucide-react';
+import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase, Languages, Home, MessageSquare, Star, MessageCircle, Frown, Building, PawPrint, Baby, Users, ArrowLeft, Pencil } from 'lucide-react';
 import { AIPredictions } from './ai-predictions';
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -18,6 +18,7 @@ import { Button } from './ui/button';
 interface GuestDetailsProps {
   guest: Guest;
   onBack: () => void;
+  onEdit: (guest: Guest) => void;
 }
 
 const sourceConfig: Record<GuestSource, { label: string; icon: LucideIcon }> = {
@@ -35,7 +36,7 @@ const feedbackConfig: Record<Feedback['type'], { icon: LucideIcon, color: string
   'Comment': { icon: MessageSquare, color: 'text-gray-500' },
 }
 
-export function GuestDetails({ guest, onBack }: GuestDetailsProps) {
+export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
   const [cardOrder, setCardOrder] = useState<string[]>([
     'currentStay', 'onSiteActivity', 'preferences', 'aiPredictions', 'stayHistory', 'feedback', 'communication'
   ]);
@@ -245,12 +246,18 @@ export function GuestDetails({ guest, onBack }: GuestDetailsProps) {
       <div className="p-4 border-b bg-background">
         <Card className="shadow-soft">
           <CardHeader>
-             <div className="flex items-center gap-4">
-               <Button variant="ghost" size="icon" className="md:hidden h-8 w-8" onClick={onBack}>
-                 <ArrowLeft className="h-5 w-5" />
-                 <span className="sr-only">Back</span>
-               </Button>
-               <CardTitle className="text-3xl font-bold">{guest.name}</CardTitle>
+             <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Button variant="ghost" size="icon" className="md:hidden h-8 w-8" onClick={onBack}>
+                    <ArrowLeft className="h-5 w-5" />
+                    <span className="sr-only">Back</span>
+                  </Button>
+                  <CardTitle className="text-3xl font-bold">{guest.name}</CardTitle>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => onEdit(guest)}>
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit Guest
+                </Button>
              </div>
             <div className="flex flex-wrap items-center text-sm text-muted-foreground mt-2 gap-x-6 gap-y-2">
               <div className="flex items-center gap-2">

@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { guests as initialGuests } from '@/lib/mock-data';
 import type { Guest, GuestSource, GuestStatus, LoyaltyTier } from '@/types';
 import { GuestList } from '@/components/guest-list';
 import { GuestDetails } from '@/components/guest-details';
@@ -10,9 +9,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AppTour } from '@/components/app-tour';
 import { GuestImportDialog } from '@/components/guest-import-dialog';
-import { format } from 'date-fns';
+import { EditGuestDialog } from '@/components/edit-guest-dialog';
 import type { Filters } from '@/types';
 import { cn } from '@/lib/utils';
+import { useGuestContext } from '@/context/guest-context';
+import { useRouter } from 'next/navigation';
+
 
 const hotels = [
   'Last Word Madikwe',
@@ -28,7 +30,16 @@ const loyaltyTiers: LoyaltyTier[] = ['Member', 'Gold', 'Platinum'];
 const sources: GuestSource[] = ['PANstrat', 'Booking.com', 'Manual Entry', 'Purple WiFi', 'Tourism Expo'];
 
 export default function Home() {
-  const [allGuests, setAllGuests] = useState<Guest[]>([]);
+  const { allGuests, loading, addGuests, updateGuest } = useGuestContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem('isAuthenticated');
+    if (!isAuthenticated) {
+      router.push('/login');
+    }
+  }, [router]);
+
   const [selectedGuestId, setSelectedGuestId] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filters>({
     search: '',
@@ -40,16 +51,15 @@ export default function Home() {
   const [isClient, setIsClient] = useState(false);
   const [isTourOpen, setIsTourOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [guestToEdit, setGuestToEdit] = useState<Guest | null>(null);
 
   useEffect(() => {
-    const guestsData = initialGuests();
-    setAllGuests(guestsData);
-    // Don't auto-select on mobile, but do on desktop
-    if (window.innerWidth >= 768 && guestsData.length > 0) {
-      setSelectedGuestId(guestsData[0].id);
-    }
     setIsClient(true);
-  }, []);
+    if (!loading && allGuests.length > 0 && window.innerWidth >= 768) {
+        setSelectedGuestId(allGuests[0].id);
+    }
+  }, [loading, allGuests]);
 
   const handleFilterChange = <K extends keyof Filters>(
     filterName: K,
@@ -69,6 +79,7 @@ export default function Home() {
   };
 
   const filteredGuests = useMemo(() => {
+    if (loading) return [];
     return allGuests.filter((guest) => {
       const searchMatch = guest.name.toLowerCase().includes(filters.search.toLowerCase());
       const statusMatch = filters.status.length === 0 || filters.status.includes(guest.status);
@@ -78,99 +89,36 @@ export default function Home() {
       
       return searchMatch && statusMatch && hotelMatch && loyaltyMatch && sourceMatch;
     });
-  }, [allGuests, filters]);
+  }, [allGuests, filters, loading]);
 
   const selectedGuest = useMemo(() => {
+    if (loading) return undefined;
     return allGuests.find((guest) => guest.id === selectedGuestId);
-  }, [allGuests, selectedGuestId]);
+  }, [allGuests, selectedGuestId, loading]);
 
 
   const handleSelectGuest = (guestId: string) => {
     setSelectedGuestId(guestId);
   };
   
-  const handleImportGuests = (csvText: string, source: GuestSource) => {
-    const newGuests: Guest[] = [];
-    const rows = csvText.split('\n').filter(row => row.trim() !== '');
-    const today = new Date();
-
-    rows.forEach((row, index) => {
-        try {
-            const columns = row.split(',').map(item => item.trim());
-            const [name, email, phone] = columns;
-
-            if (columns.length === 3) {
-                // Prospect format: name,email,phone
-                const guest: Guest = {
-                    id: `imported-${Date.now()}-${index}`,
-                    name,
-                    email,
-                    phone,
-                    source,
-                    status: 'Prospect',
-                    totalStays: 0,
-                    loyaltyTier: 'Member',
-                    preferences: 'Newly imported prospect.',
-                    stayHistory: [],
-                    onSiteActivity: {
-                        firstSeen: 'N/A',
-                        lastSeen: 'N/A',
-                        connectedDevices: [],
-                    },
-                    communicationHistory: [],
-                    feedback: [],
-                };
-                newGuests.push(guest);
-            } else if (columns.length >= 7) {
-                // Guest with stay format: name,email,phone,hotel,room,checkIn,checkOut
-                const [,,, hotel, room, checkIn, checkOut] = columns;
-                const checkInDate = new Date(checkIn);
-                let status: GuestStatus;
-                if (checkInDate > today) {
-                    status = 'Arriving Soon';
-                } else {
-                    status = 'Checked-in'; // Simplified for demo
-                }
-
-                const guest: Guest = {
-                    id: `imported-${Date.now()}-${index}`,
-                    name,
-                    email,
-                    phone,
-                    source,
-                    status,
-                    totalStays: 1,
-                    loyaltyTier: 'Member',
-                    preferences: 'Newly imported guest.',
-                    stayHistory: [{
-                        hotelName: hotel,
-                        roomNumber: room,
-                        checkInDate: format(checkInDate, 'yyyy-MM-dd'),
-                        checkOutDate: format(new Date(checkOut), 'yyyy-MM-dd'),
-                    }],
-                    onSiteActivity: {
-                        firstSeen: 'N/A',
-                        lastSeen: 'N/A',
-                        connectedDevices: [],
-                    },
-                    communicationHistory: [],
-                    feedback: [],
-                };
-                newGuests.push(guest);
-            } else {
-                throw new Error('Invalid CSV format');
-            }
-        } catch (e) {
-            console.error(`Could not parse row ${index + 1}: ${row}`, e);
-        }
-    });
-
-    setAllGuests(prevGuests => [...prevGuests, ...newGuests]);
+  const handleImportGuests = (newGuests: Guest[]) => {
+    addGuests(newGuests);
     setIsImportOpen(false);
-};
+  };
+
+  const handleEditGuest = (guest: Guest) => {
+    setGuestToEdit(guest);
+    setIsEditOpen(true);
+  };
+
+  const handleUpdateGuest = (updatedGuest: Guest) => {
+    updateGuest(updatedGuest);
+    setIsEditOpen(false);
+    setGuestToEdit(null);
+  };
 
 
-  if (!isClient) {
+  if (!isClient || loading) {
     return (
         <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
             <div className="flex-1 grid md:grid-cols-[350px_1fr] overflow-hidden">
@@ -213,8 +161,8 @@ export default function Home() {
               'h-full w-full md:w-[350px] md:flex-shrink-0',
               'transition-transform duration-300 ease-in-out md:transform-none',
               {
-                '-translate-x-full': selectedGuestId,
-                'translate-x-0': !selectedGuestId,
+                '-translate-x-full': selectedGuestId && isClient && window.innerWidth < 768,
+                'translate-x-0': !selectedGuestId || !isClient || window.innerWidth >= 768,
               }
             )}
           >
@@ -236,14 +184,18 @@ export default function Home() {
               'absolute inset-0 md:relative h-full',
               'transition-transform duration-300 ease-in-out md:transform-none',
               {
-                'translate-x-full': !selectedGuestId,
-                'translate-x-0': selectedGuestId,
+                'translate-x-full': !selectedGuestId && isClient && window.innerWidth < 768,
+                'translate-x-0': selectedGuestId || !isClient || window.innerWidth >= 768,
               }
             )}
             id="guest-details-panel"
           >
             {selectedGuest ? (
-              <GuestDetails guest={selectedGuest} onBack={() => setSelectedGuestId(null)} />
+              <GuestDetails 
+                guest={selectedGuest} 
+                onBack={() => setSelectedGuestId(null)}
+                onEdit={handleEditGuest} 
+              />
             ) : (
               <div className="hidden md:flex items-center justify-center h-full">
                 <Card className="w-full max-w-md shadow-soft">
@@ -268,6 +220,14 @@ export default function Home() {
         onOpenChange={setIsImportOpen}
         onImport={handleImportGuests}
       />
+      {guestToEdit && (
+        <EditGuestDialog
+            isOpen={isEditOpen}
+            onOpenChange={setIsEditOpen}
+            guest={guestToEdit}
+            onSave={handleUpdateGuest}
+        />
+      )}
     </>
   );
 }
