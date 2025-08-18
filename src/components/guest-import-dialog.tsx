@@ -25,6 +25,9 @@ const importSources: GuestSource[] = ['Booking.com', 'Manual Entry', 'PANstrat',
 
 const parseCSV = (content: string): { headers: string[], rows: string[][] } => {
   const lines = content.split('\n').filter(line => line.trim() !== '');
+  if (lines.length === 0) {
+    return { headers: [], rows: [] };
+  }
   const delimiter = lines[0].includes('\t') ? '\t' : ',';
   const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase().replace(/\s+/g, ''));
   const rows = lines.slice(1).map(line => line.split(delimiter).map(item => item.trim()));
@@ -61,7 +64,7 @@ export function GuestImportDialog({ isOpen, onOpenChange }: GuestImportDialogPro
     const today = new Date();
     
     // Define header sets for format detection
-    const requiredGuestHeaders = ['hotel', 'room', 'checkin', 'checkout'];
+    const requiredGuestHeaders = ['name', 'email', 'phone', 'hotel', 'room', 'checkin', 'checkout'];
     const requiredWifiHeaders = ['name', 'email', 'gender', 'dob'];
     const detailedWifiHeaders = ['firstname', 'surname', 'dateofbirth', 'email'];
     const requiredProspectHeaders = ['name', 'email', 'phone'];
@@ -222,6 +225,8 @@ export function GuestImportDialog({ isOpen, onOpenChange }: GuestImportDialogPro
             });
         }
         onOpenChange(false);
+        setFileContent('');
+        setSelectedFile(null);
     }
   };
 
