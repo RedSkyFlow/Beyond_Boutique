@@ -24,8 +24,9 @@ const importSources: GuestSource[] = ['Booking.com', 'Manual Entry', 'PANstrat',
 
 const parseCSV = (content: string): { headers: string[], rows: string[][] } => {
   const lines = content.split('\n').filter(line => line.trim() !== '');
-  const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-  const rows = lines.slice(1).map(line => line.split(',').map(item => item.trim()));
+  const delimiter = lines[0].includes('\t') ? '\t' : ',';
+  const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase().replace(/\s+/g, ''));
+  const rows = lines.slice(1).map(line => line.split(delimiter).map(item => item.trim()));
   return { headers, rows };
 };
 
@@ -56,21 +57,24 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
     const newGuests: Guest[] = [];
     const today = new Date();
     
+    // Define header sets for format detection
     const requiredGuestHeaders = ['hotel', 'room', 'checkin', 'checkout'];
-    const requiredWifiHeaders = ['gender', 'dob'];
+    const requiredWifiHeaders = ['name', 'email', 'gender', 'dob'];
+    const detailedWifiHeaders = ['firstname', 'surname', 'dateofbirth', 'email'];
     const requiredProspectHeaders = ['name', 'email', 'phone'];
 
     const isGuestWithStayFormat = requiredGuestHeaders.every(h => headers.includes(h));
-    const isWifiFormat = requiredWifiHeaders.every(h => headers.includes(h));
+    const isSimpleWifiFormat = requiredWifiHeaders.every(h => headers.includes(h));
+    const isDetailedWifiFormat = detailedWifiHeaders.every(h => headers.includes(h));
     const isProspectFormat = headers.length === 3 && requiredProspectHeaders.every(h => headers.includes(h));
 
 
     rows.forEach((columns, index) => {
       try {
         let guest: Guest | null = null;
+        const rowData = headers.reduce((obj, header, i) => ({ ...obj, [header]: columns[i] }), {} as Record<string, string>);
         
         if (isGuestWithStayFormat) {
-            const rowData = headers.reduce((obj, header, i) => ({ ...obj, [header]: columns[i] }), {} as Record<string, string>);
             const { name, email, phone, hotel, room, checkin, checkout } = rowData;
             
             const checkInDate = new Date(checkin);
@@ -106,9 +110,38 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
                 feedback: [],
             };
 
-        } else if (isWifiFormat) {
-            const rowData = headers.reduce((obj, header, i) => ({ ...obj, [header]: columns[i] }), {} as Record<string, string>);
-            
+        } else if (isDetailedWifiFormat) {
+            const dob = parse(rowData.dateofbirth, 'yyyy/MM/dd', new Date());
+             if (!isValid(dob)) {
+                 throw new Error(`Invalid date of birth format in row ${index + 2}: "${rowData.dateofbirth}". Expected yyyy/MM/dd.`);
+            }
+            const onSiteActivity: OnSiteActivity = {
+                firstSeen: rowData.firstvisit || 'N/A',
+                lastSeen: rowData.lastvisit || 'N/A',
+                connectedDevices: [],
+                venuesVisited: rowData.venuesvisited ? rowData.venuesvisited.split(';') : [],
+            };
+            guest = {
+                id: `imported-${Date.now()}-${index}`,
+                name: `${rowData.firstname} ${rowData.surname}`,
+                email: rowData.email,
+                phone: rowData.mobilenumber || '',
+                source: 'Purple WiFi',
+                status: 'Prospect',
+                totalStays: 0,
+                loyaltyTier: 'Member',
+                preferences: 'Imported from Purple WiFi data.',
+                gender: rowData.gender as 'Male' | 'Female' | 'Other',
+                dateOfBirth: format(dob, 'yyyy-MM-dd'),
+                age: parseInt(rowData.age, 10) || undefined,
+                homeTown: rowData.livesin,
+                stayHistory: [],
+                onSiteActivity,
+                communicationHistory: [],
+                feedback: [],
+            };
+
+        } else if (isSimpleWifiFormat) {
             const dob = parse(rowData.dob, 'yyyy-MM-dd', new Date());
             if (!isValid(dob)) {
                  throw new Error(`Invalid date of birth format in row ${index + 2}: "${rowData.dob}". Expected yyyy-MM-dd.`);
@@ -140,7 +173,7 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
             };
         
         } else if (isProspectFormat) {
-            const [name, email, phone] = columns;
+            const { name, email, phone } = rowData;
              guest = {
                 id: `imported-${Date.now()}-${index}`,
                 name, email, phone, source, status: 'Prospect',
@@ -153,34 +186,7 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
                 feedback: [],
             };
         } else {
-            // Fallback for simple guest stay format without explicit headers check
-            if (columns.length >= 7) {
-                 const [name, email, phone, hotel, room, checkInStr, checkOutStr] = columns;
-                const checkInDate = new Date(checkInStr);
-                const checkOutDate = new Date(checkOutStr);
-
-                if (!isValid(checkInDate) || !isValid(checkOutDate)) {
-                    throw new Error(`Unrecognized CSV format. Please check headers. Row ${index + 2} looks like a stay but has invalid dates.`);
-                }
-                 let status: GuestStatus;
-                if (checkInDate > today) {
-                    status = 'Arriving Soon';
-                } else if (checkOutDate < today) {
-                    status = 'Checked-out';
-                } else {
-                    status = 'Checked-in';
-                }
-                guest = {
-                    id: `imported-${Date.now()}-${index}`,
-                    name, email, phone, source, status,
-                    totalStays: 1, loyaltyTier: 'Member', preferences: 'Newly imported guest.',
-                    stayHistory: [{ hotelName: hotel, roomNumber: room, checkInDate: format(checkInDate, 'yyyy-MM-dd'), checkOutDate: format(checkOutDate, 'yyyy-MM-dd'), }],
-                    onSiteActivity: { firstSeen: 'N/A', lastSeen: 'N/A', connectedDevices: [] },
-                    communicationHistory: [], feedback: [],
-                };
-            } else {
-                 throw new Error('Unrecognized CSV format. Please check the headers and column count.');
-            }
+            throw new Error('Unrecognized CSV format. Please check the headers and column count.');
         }
 
         if (guest) {
@@ -213,7 +219,7 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
         <DialogHeader>
           <DialogTitle>Import Guests or Prospects</DialogTitle>
           <DialogDescription>
-            Select a CSV file to import. The system will automatically detect the format based on headers.
+            Select a CSV or TSV file to import. The system will automatically detect the format based on headers.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -221,16 +227,16 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
             <Info className="h-4 w-4" />
             <AlertDescription className="text-xs space-y-1">
               <p><b>Guest Stay Format:</b> Requires headers including <code className="bg-muted p-1 rounded">name,email,phone,hotel,room,checkin,checkout</code></p>
-              <p><b>WiFi Data Format:</b> Requires headers including <code className="bg-muted p-1 rounded">name,email,phone,gender,dob</code></p>
+              <p><b>WiFi Data Format:</b> Requires headers like <code className="bg-muted p-1 rounded">firstname,surname,dateofbirth,email</code> etc.</p>
               <p><b>Prospect Format:</b> Requires headers <code className="bg-muted p-1 rounded">name,email,phone</code></p>
             </AlertDescription>
           </Alert>
           <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="csv-file">CSV File</Label>
+            <Label htmlFor="csv-file">CSV or TSV File</Label>
             <Input
               id="csv-file"
               type="file"
-              accept=".csv"
+              accept=".csv,.tsv,.txt"
               onChange={handleFileChange}
               className="pt-2 text-sm"
             />
