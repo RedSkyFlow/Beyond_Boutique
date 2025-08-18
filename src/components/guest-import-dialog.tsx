@@ -4,12 +4,12 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import type { Guest, GuestSource, GuestStatus } from '@/types';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Info } from 'lucide-react';
+import { Info, FileText } from 'lucide-react';
 import { format } from 'date-fns';
 
 
@@ -22,14 +22,28 @@ interface GuestImportDialogProps {
 const importSources: GuestSource[] = ['Booking.com', 'Manual Entry', 'PANstrat', 'Purple WiFi', 'Tourism Expo'];
 
 export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImportDialogProps) {
-  const [csvText, setCsvText] = useState('');
+  const [fileContent, setFileContent] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [source, setSource] = useState<GuestSource>('Booking.com');
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        setFileContent(text);
+      };
+      reader.readAsText(file);
+    }
+  };
+
   const handleImportClick = () => {
-    if (!csvText.trim() || !source) return;
+    if (!fileContent.trim() || !source) return;
 
     const newGuests: Guest[] = [];
-    const rows = csvText.split('\n').filter(row => row.trim() !== '');
+    const rows = fileContent.split('\n').filter(row => row.trim() !== '');
     const today = new Date();
 
     rows.forEach((row, index) => {
@@ -112,7 +126,7 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
         <DialogHeader>
           <DialogTitle>Import Guests or Prospects</DialogTitle>
           <DialogDescription>
-            Paste CSV data below. The system will automatically detect the format.
+            Select a CSV file to import. The system will automatically detect the format.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -125,14 +139,20 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
             </AlertDescription>
           </Alert>
           <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="csv-data">Guest Data (CSV)</Label>
-            <Textarea
-              id="csv-data"
-              placeholder="John Doe,j.doe@example.com,555-0199,Last Word Madikwe,10,2024-09-01,2024-09-05"
-              value={csvText}
-              onChange={(e) => setCsvText(e.target.value)}
-              rows={6}
+            <Label htmlFor="csv-file">CSV File</Label>
+            <Input
+              id="csv-file"
+              type="file"
+              accept=".csv"
+              onChange={handleFileChange}
+              className="pt-2 text-sm"
             />
+            {selectedFile && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+                    <FileText className="h-4 w-4" />
+                    <span>{selectedFile.name}</span>
+                </div>
+            )}
           </div>
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="source">Data Source</Label>
@@ -149,7 +169,7 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" onClick={handleImportClick} disabled={!csvText.trim()}>
+          <Button type="button" onClick={handleImportClick} disabled={!selectedFile}>
             Import Data
           </Button>
         </DialogFooter>
