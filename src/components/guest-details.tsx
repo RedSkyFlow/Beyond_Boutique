@@ -3,7 +3,7 @@
 
 import type { Guest, GuestSource, Feedback } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase, Languages, Home, MessageSquare, Star, MessageCircle, Frown, Building, PawPrint, Baby, Users, ArrowLeft, Pencil } from 'lucide-react';
+import { Mail, Phone, Calendar, User, Award, Wifi, Smartphone, History, Database, FileText, UserPlus, Package, Briefcase, Languages, Home, MessageSquare, Star, MessageCircle, Frown, Building, PawPrint, Baby, Users, ArrowLeft, Pencil, VenetianMask } from 'lucide-react';
 import { AIPredictions } from './ai-predictions';
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -108,7 +108,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
             </CardTitle>
             <CardDescription>Purple WiFi Analytics</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm">
+          <CardContent className="space-y-3 text-sm">
             <p><span className="font-semibold">First Seen:</span> {guest.onSiteActivity.firstSeen}</p>
             <p><span className="font-semibold">Last Seen:</span> {guest.onSiteActivity.lastSeen}</p>
             <div className="flex items-start gap-2 pt-1">
@@ -123,6 +123,17 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
                 </ul>
               </div>
             </div>
+            {guest.onSiteActivity.venuesVisited && guest.onSiteActivity.venuesVisited.length > 0 && (
+              <div className="flex items-start gap-2 pt-1">
+                <Building className="h-4 w-4 mt-0.5"/>
+                <div>
+                  <p className="font-semibold">Venues Visited:</p>
+                  <ul className="list-disc pl-5 text-muted-foreground">
+                    {guest.onSiteActivity.venuesVisited.map((venue, index) => <li key={`${venue}-${index}`}>{venue}</li>)}
+                  </ul>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       ),
@@ -307,6 +318,12 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
                       <User className="h-4 w-4 text-primary" />
                       <span>{guest.age} years old</span>
                   </div>
+              )}
+              {guest.gender && (
+                <div className="flex items-center gap-2">
+                  <VenetianMask className="h-4 w-4 text-primary" />
+                  <span>{guest.gender}</span>
+                </div>
               )}
             </div>
           </CardHeader>

@@ -19,6 +19,7 @@ export interface OnSiteActivity {
   firstSeen: string;
   lastSeen: string;
   connectedDevices: string[];
+  venuesVisited?: string[];
 }
 
 export interface Communication {
@@ -51,6 +52,8 @@ export interface Guest {
   occupation?: string;
   homeTown?: string;
   language?: string;
+  gender?: 'Male' | 'Female' | 'Other';
+  dateOfBirth?: string;
 }
 
 export interface Filters {
