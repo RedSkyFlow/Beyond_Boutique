@@ -56,29 +56,37 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
     const newGuests: Guest[] = [];
     const today = new Date();
     
-    // Determine format based on headers
-    const isGuestWithStayFormat = headers.includes('hotel') && headers.includes('room');
-    const isProspectFormat = headers.length === 3 && headers.includes('name') && headers.includes('email') && headers.includes('phone');
-    const isWifiFormat = headers.includes('gender') && headers.includes('dob');
+    const requiredGuestHeaders = ['hotel', 'room', 'checkin', 'checkout'];
+    const requiredWifiHeaders = ['gender', 'dob'];
+    const requiredProspectHeaders = ['name', 'email', 'phone'];
+
+    const isGuestWithStayFormat = requiredGuestHeaders.every(h => headers.includes(h));
+    const isWifiFormat = requiredWifiHeaders.every(h => headers.includes(h));
+    const isProspectFormat = headers.length === 3 && requiredProspectHeaders.every(h => headers.includes(h));
+
 
     rows.forEach((columns, index) => {
       try {
         let guest: Guest | null = null;
         
-        if (isGuestWithStayFormat || (!isProspectFormat && !isWifiFormat && columns.length >= 7)) {
-            const [name, email, phone, hotel, room, checkInStr, checkOutStr] = columns;
-            const checkInDate = new Date(checkInStr);
-            const checkOutDate = new Date(checkOutStr);
+        if (isGuestWithStayFormat) {
+            const rowData = headers.reduce((obj, header, i) => ({ ...obj, [header]: columns[i] }), {} as Record<string, string>);
+            const { name, email, phone, hotel, room, checkin, checkout } = rowData;
+            
+            const checkInDate = new Date(checkin);
+            const checkOutDate = new Date(checkout);
 
             if (!isValid(checkInDate) || !isValid(checkOutDate)) {
-                throw new Error(`Invalid date format in row ${index + 2}. Check-in: "${checkInStr}", Check-out: "${checkOutStr}"`);
+                throw new Error(`Invalid date format in row ${index + 2}. Check-in: "${checkin}", Check-out: "${checkout}"`);
             }
             
             let status: GuestStatus;
             if (checkInDate > today) {
                 status = 'Arriving Soon';
+            } else if (checkOutDate < today) {
+                status = 'Checked-out';
             } else {
-                status = 'Checked-in'; // Simplified for demo
+                status = 'Checked-in';
             }
             
             guest = {
@@ -103,7 +111,7 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
             
             const dob = parse(rowData.dob, 'yyyy-MM-dd', new Date());
             if (!isValid(dob)) {
-                 throw new Error(`Invalid date of birth format in row ${index + 2}: "${rowData.dob}"`);
+                 throw new Error(`Invalid date of birth format in row ${index + 2}: "${rowData.dob}". Expected yyyy-MM-dd.`);
             }
 
             const onSiteActivity: OnSiteActivity = {
@@ -131,7 +139,7 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
                 feedback: [],
             };
         
-        } else if (isProspectFormat || (!isWifiFormat && columns.length === 3)) {
+        } else if (isProspectFormat) {
             const [name, email, phone] = columns;
              guest = {
                 id: `imported-${Date.now()}-${index}`,
@@ -145,7 +153,34 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
                 feedback: [],
             };
         } else {
-            throw new Error('Unrecognized CSV format. Please check the headers and column count.');
+            // Fallback for simple guest stay format without explicit headers check
+            if (columns.length >= 7) {
+                 const [name, email, phone, hotel, room, checkInStr, checkOutStr] = columns;
+                const checkInDate = new Date(checkInStr);
+                const checkOutDate = new Date(checkOutStr);
+
+                if (!isValid(checkInDate) || !isValid(checkOutDate)) {
+                    throw new Error(`Unrecognized CSV format. Please check headers. Row ${index + 2} looks like a stay but has invalid dates.`);
+                }
+                 let status: GuestStatus;
+                if (checkInDate > today) {
+                    status = 'Arriving Soon';
+                } else if (checkOutDate < today) {
+                    status = 'Checked-out';
+                } else {
+                    status = 'Checked-in';
+                }
+                guest = {
+                    id: `imported-${Date.now()}-${index}`,
+                    name, email, phone, source, status,
+                    totalStays: 1, loyaltyTier: 'Member', preferences: 'Newly imported guest.',
+                    stayHistory: [{ hotelName: hotel, roomNumber: room, checkInDate: format(checkInDate, 'yyyy-MM-dd'), checkOutDate: format(checkOutDate, 'yyyy-MM-dd'), }],
+                    onSiteActivity: { firstSeen: 'N/A', lastSeen: 'N/A', connectedDevices: [] },
+                    communicationHistory: [], feedback: [],
+                };
+            } else {
+                 throw new Error('Unrecognized CSV format. Please check the headers and column count.');
+            }
         }
 
         if (guest) {
@@ -185,7 +220,7 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
           <Alert>
             <Info className="h-4 w-4" />
             <AlertDescription className="text-xs space-y-1">
-              <p><b>Guest Stay Format:</b> Requires headers including <code className="bg-muted p-1 rounded">name,email,phone,hotel,room,checkIn,checkOut</code></p>
+              <p><b>Guest Stay Format:</b> Requires headers including <code className="bg-muted p-1 rounded">name,email,phone,hotel,room,checkin,checkout</code></p>
               <p><b>WiFi Data Format:</b> Requires headers including <code className="bg-muted p-1 rounded">name,email,phone,gender,dob</code></p>
               <p><b>Prospect Format:</b> Requires headers <code className="bg-muted p-1 rounded">name,email,phone</code></p>
             </AlertDescription>
