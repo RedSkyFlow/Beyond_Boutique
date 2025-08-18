@@ -65,7 +65,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
         <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
-              <Calendar className="h-5 w-5" />
+              <Calendar className="h-5 w-5 text-primary" />
               {guest.status === 'Arriving Soon' ? 'Upcoming Stay' : 'Current Stay'}
             </CardTitle>
             {currentStay && <CardDescription>{currentStay.hotelName}</CardDescription>}
@@ -103,7 +103,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
         <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
-              <Wifi className="h-5 w-5" />
+              <Wifi className="h-5 w-5 text-primary" />
               On-Site Activity
             </CardTitle>
             <CardDescription>Purple WiFi Analytics</CardDescription>
@@ -112,7 +112,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
             <p><span className="font-semibold">First Seen:</span> {guest.onSiteActivity.firstSeen}</p>
             <p><span className="font-semibold">Last Seen:</span> {guest.onSiteActivity.lastSeen}</p>
             <div className="flex items-start gap-2 pt-1">
-              <Smartphone className="h-4 w-4 mt-0.5"/>
+              <Smartphone className="h-4 w-4 mt-0.5 text-primary"/>
               <div>
                 <p className="font-semibold">Connected Devices:</p>
                 <ul className="list-disc pl-5 text-muted-foreground">
@@ -125,7 +125,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
             </div>
             {guest.onSiteActivity.venuesVisited && guest.onSiteActivity.venuesVisited.length > 0 && (
               <div className="flex items-start gap-2 pt-1">
-                <Building className="h-4 w-4 mt-0.5"/>
+                <Building className="h-4 w-4 mt-0.5 text-primary"/>
                 <div>
                   <p className="font-semibold">Venues Visited:</p>
                   <ul className="list-disc pl-5 text-muted-foreground">
@@ -142,7 +142,10 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
       component: (
         <Card className="shadow-soft w-full h-full">
           <CardHeader>
-            <CardTitle className="text-xl">Guest Preferences</CardTitle>
+            <CardTitle className="text-xl flex items-center gap-2">
+              <UserPlus className="h-5 w-5 text-primary" />
+              Guest Preferences
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground whitespace-pre-wrap">{guest.preferences}</p>
@@ -158,7 +161,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
         <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
-              <History className="h-5 w-5" />
+              <History className="h-5 w-5 text-primary" />
               Stay History
             </CardTitle>
           </CardHeader>
@@ -189,7 +192,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
         <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
-              <MessageSquare className="h-5 w-5" />
+              <MessageSquare className="h-5 w-5 text-primary" />
               Guest Feedback
             </CardTitle>
           </CardHeader>
@@ -227,7 +230,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
         <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
-              <History className="h-5 w-5" />
+              <History className="h-5 w-5 text-primary" />
               Communication History
             </CardTitle>
           </CardHeader>
@@ -272,16 +275,16 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
              </div>
             <div className="flex flex-wrap items-center text-sm text-muted-foreground mt-2 gap-x-6 gap-y-2">
               <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
+                <Mail className="h-4 w-4 text-primary" />
                 <span>{guest.email}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
+                <Phone className="h-4 w-4 text-primary" />
                 <span>{guest.phone}</span>
               </div>
               {guest.homeTown && (
                   <div className="flex items-center gap-2">
-                      <Home className="h-4 w-4" />
+                      <Home className="h-4 w-4 text-primary" />
                       <span>{guest.homeTown}</span>
                   </div>
               )}

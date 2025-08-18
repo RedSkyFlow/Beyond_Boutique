@@ -50,7 +50,7 @@ export default function LoginPage() {
                 <div className="flex justify-center mb-4">
                     <Hotel className="h-10 w-10 text-primary-foreground bg-primary p-2 rounded-lg" />
                 </div>
-                <CardTitle className="text-2xl font-headline">Boutique CRM</CardTitle>
+                <CardTitle className="text-2xl font-headline">Beyond Boutique</CardTitle>
                 <CardDescription>Enter your credentials to access the dashboard.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

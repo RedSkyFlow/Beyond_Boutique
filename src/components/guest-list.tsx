@@ -73,7 +73,7 @@ export function GuestList({
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Hotel className="h-8 w-8 text-primary-foreground bg-primary p-1.5 rounded-lg" />
-              <h1 className="text-2xl font-bold tracking-tight font-headline">Boutique CRM</h1>
+              <h1 className="text-2xl font-bold tracking-tight font-headline">Beyond Boutique</h1>
             </div>
            <div className="flex items-center gap-1">
             <Button variant="outline" size="sm" className="h-8" onClick={onImportClick}>

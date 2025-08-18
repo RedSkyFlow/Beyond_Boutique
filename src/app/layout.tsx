@@ -11,8 +11,8 @@ const alegreya = Alegreya({
 });
 
 export const metadata: Metadata = {
-  title: 'Boutique CRM',
-  description: 'A CRM for boutique hotels.',
+  title: 'Beyond Boutique',
+  description: 'CRM for exceptional hospitality.',
 };
 
 export default function RootLayout({
