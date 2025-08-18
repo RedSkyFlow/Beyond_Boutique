@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import type { Guest, GuestSource, GuestStatus } from '@/types';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info, FileText } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 
 
 interface GuestImportDialogProps {
@@ -75,8 +75,14 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
                 newGuests.push(guest);
             } else if (columns.length >= 7) {
                 // Guest with stay format: name,email,phone,hotel,room,checkIn,checkOut
-                const [,,, hotel, room, checkIn, checkOut] = columns;
-                const checkInDate = new Date(checkIn);
+                const [,,, hotel, room, checkInStr, checkOutStr] = columns;
+                const checkInDate = new Date(checkInStr);
+                const checkOutDate = new Date(checkOutStr);
+
+                if (!isValid(checkInDate) || !isValid(checkOutDate)) {
+                  throw new Error(`Invalid date format in row. Check-in: "${checkInStr}", Check-out: "${checkOutStr}"`);
+                }
+                
                 let status: GuestStatus;
                 if (checkInDate > today) {
                     status = 'Arriving Soon';
@@ -98,7 +104,7 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
                         hotelName: hotel,
                         roomNumber: room,
                         checkInDate: format(checkInDate, 'yyyy-MM-dd'),
-                        checkOutDate: format(new Date(checkOut), 'yyyy-MM-dd'),
+                        checkOutDate: format(checkOutDate, 'yyyy-MM-dd'),
                     }],
                     onSiteActivity: {
                         firstSeen: 'N/A',
