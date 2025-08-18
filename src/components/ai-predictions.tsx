@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Wand2, Loader2, AlertTriangle, ChevronDown } from 'lucide-react';
@@ -31,6 +31,14 @@ export function AIPredictions({ guest }: AIPredictionsProps) {
   const [predictions, setPredictions] = useState<SuggestGuestPreferencesOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(true);
+
+  useEffect(() => {
+    // Reset state when the guest prop changes
+    setIsLoading(false);
+    setPredictions(null);
+    setError(null);
+  }, [guest]);
+
 
   const handleGenerateClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation(); // Prevent the collapsible from toggling when clicking the button
