@@ -8,14 +8,23 @@ import { Wand2, Loader2, AlertTriangle, ChevronDown } from 'lucide-react';
 import { suggestGuestPreferences } from '@/ai/flows/suggest-guest-preferences';
 import type { SuggestGuestPreferencesOutput } from '@/ai/flows/suggest-guest-preferences';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import type { Guest } from '@/types';
+import type { Guest, GuestStatus } from '@/types';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
+import { Badge } from './ui/badge';
 
 
 interface AIPredictionsProps {
   guest: Guest;
 }
+
+const statusBadgeConfig: Record<GuestStatus, string> = {
+    'Checked-in': 'bg-green-100 text-green-800 border-green-200 hover:bg-green-100',
+    'Arriving Soon': 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-100',
+    'Checked-out': 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-100',
+    'Prospect': 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-100',
+};
+
 
 export function AIPredictions({ guest }: AIPredictionsProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -109,7 +118,13 @@ export function AIPredictions({ guest }: AIPredictionsProps) {
               {predictions && (
                 <div className="space-y-4 text-sm">
                   <div>
-                      <h4 className="font-semibold mb-2">Suggestions for a <span className="text-primary">{guest.status}</span> guest</h4>
+                      <div className="font-semibold mb-2 flex items-center gap-2">
+                        <span>Suggestions for a</span>
+                        <Badge className={cn("font-bold", statusBadgeConfig[guest.status])}>
+                            {guest.status}
+                        </Badge>
+                        <span>guest</span>
+                      </div>
                       {predictions.suggestions.length > 0 ? (
                           <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
                               {predictions.suggestions.map((suggestion, index) => (
