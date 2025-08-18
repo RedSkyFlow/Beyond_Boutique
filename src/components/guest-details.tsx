@@ -255,7 +255,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
 
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-secondary/30">
       {/* Guest Header Card */}
       <div className="p-4 border-b bg-background">
         <Card className="shadow-soft">
@@ -333,7 +333,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
         </Card>
       </div>
       
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 h-full">
         <div className="p-4">
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={cardOrder} strategy={verticalListSortingStrategy}>

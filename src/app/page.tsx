@@ -181,7 +181,7 @@ export default function Home() {
           <div
             className={cn(
               'bg-secondary/30 flex-1 flex flex-col',
-              'absolute inset-0 md:relative h-full',
+              'absolute inset-0 md:relative h-full bg-background',
               'transition-transform duration-300 ease-in-out md:transform-none',
               {
                 'translate-x-full': !selectedGuestId && isClient && window.innerWidth < 768,
