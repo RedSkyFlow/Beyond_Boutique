@@ -12,12 +12,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info, FileText } from 'lucide-react';
 import { format, isValid, parse } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { useGuestContext } from '@/context/guest-context';
 
 
 interface GuestImportDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  onImport: (newGuests: Guest[]) => void;
+  onImport: (newGuests: Guest[]) => void; // This prop might be deprecated in favor of context
 }
 
 const importSources: GuestSource[] = ['Booking.com', 'Manual Entry', 'PANstrat', 'Purple WiFi', 'Tourism Expo'];
@@ -31,11 +32,13 @@ const parseCSV = (content: string): { headers: string[], rows: string[][] } => {
 };
 
 
-export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImportDialogProps) {
+export function GuestImportDialog({ isOpen, onOpenChange }: GuestImportDialogProps) {
   const [fileContent, setFileContent] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [source, setSource] = useState<GuestSource>('Booking.com');
   const { toast } = useToast();
+  const { updateOrAddGuests, addGuests } = useGuestContext();
+
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -54,7 +57,7 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
     if (!fileContent.trim() || !source) return;
 
     const { headers, rows } = parseCSV(fileContent);
-    const newGuests: Guest[] = [];
+    const guestsFromCSV: Guest[] = [];
     const today = new Date();
     
     // Define header sets for format detection
@@ -122,15 +125,15 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
                 venuesVisited: rowData.venuesvisited ? rowData.venuesvisited.split(';') : [],
             };
             guest = {
-                id: `imported-${Date.now()}-${index}`,
+                id: `imported-${Date.now()}-${index}`, // This ID is temporary
                 name: `${rowData.firstname} ${rowData.surname}`,
                 email: rowData.email,
                 phone: rowData.mobilenumber || '',
                 source: 'Purple WiFi',
-                status: 'Prospect',
+                status: 'Prospect', // Default status, will be handled by reconciliation logic
                 totalStays: 0,
                 loyaltyTier: 'Member',
-                preferences: 'Imported from Purple WiFi data.',
+                preferences: 'Data imported from Purple WiFi.',
                 gender: rowData.gender as 'Male' | 'Female' | 'Other',
                 dateOfBirth: format(dob, 'yyyy-MM-dd'),
                 age: parseInt(rowData.age, 10) || undefined,
@@ -155,15 +158,15 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
             };
 
             guest = {
-                id: `imported-${Date.now()}-${index}`,
+                id: `imported-${Date.now()}-${index}`, // Temp ID
                 name: rowData.name,
                 email: rowData.email,
-                phone: rowData.phone,
+                phone: rowData.phone || '',
                 source: 'Purple WiFi',
-                status: 'Prospect',
+                status: 'Prospect', // Default
                 totalStays: 0,
                 loyaltyTier: 'Member',
-                preferences: 'Imported from Purple WiFi data.',
+                preferences: 'Data imported from Purple WiFi.',
                 gender: rowData.gender as 'Male' | 'Female' | 'Other',
                 dateOfBirth: format(dob, 'yyyy-MM-dd'),
                 stayHistory: [],
@@ -190,7 +193,7 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
         }
 
         if (guest) {
-          newGuests.push(guest);
+          guestsFromCSV.push(guest);
         }
 
       } catch (e: any) {
@@ -204,12 +207,21 @@ export function GuestImportDialog({ isOpen, onOpenChange, onImport }: GuestImpor
       }
     });
 
-    if (newGuests.length > 0) {
-        onImport(newGuests);
-        toast({
-            title: "Import Successful",
-            description: `${newGuests.length} guests/prospects have been imported.`,
-        });
+    if (guestsFromCSV.length > 0) {
+        if (isDetailedWifiFormat || isSimpleWifiFormat) {
+            const { updatedCount, newCount } = updateOrAddGuests(guestsFromCSV);
+            toast({
+                title: "WiFi Data Imported",
+                description: `${updatedCount} guest(s) updated and ${newCount} new prospect(s) created.`,
+            });
+        } else {
+            addGuests(guestsFromCSV);
+            toast({
+                title: "Import Successful",
+                description: `${guestsFromCSV.length} guests/prospects have been imported.`,
+            });
+        }
+        onOpenChange(false);
     }
   };
 

@@ -10,6 +10,7 @@ interface GuestContextType {
   loading: boolean;
   addGuests: (newGuests: Guest[]) => void;
   updateGuest: (updatedGuest: Guest) => void;
+  updateOrAddGuests: (guestsFromImport: Guest[]) => { updatedCount: number; newCount: number };
 }
 
 const GuestContext = createContext<GuestContextType | undefined>(undefined);
@@ -57,8 +58,45 @@ export function GuestProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const updateOrAddGuests = (guestsFromImport: Guest[]) => {
+    let updatedCount = 0;
+    let newCount = 0;
+    const newGuestsToAdd: Guest[] = [];
+
+    setAllGuests(prevGuests => {
+      const guestsCopy = [...prevGuests];
+      const guestMap = new Map(guestsCopy.map(g => [g.email.toLowerCase(), g]));
+
+      guestsFromImport.forEach(importGuest => {
+        const existingGuest = guestMap.get(importGuest.email.toLowerCase());
+        
+        if (existingGuest) {
+          // Update existing guest
+          existingGuest.onSiteActivity = importGuest.onSiteActivity;
+          existingGuest.age = existingGuest.age || importGuest.age;
+          existingGuest.gender = existingGuest.gender || importGuest.gender;
+          existingGuest.dateOfBirth = existingGuest.dateOfBirth || importGuest.dateOfBirth;
+          existingGuest.homeTown = existingGuest.homeTown || importGuest.homeTown;
+          
+          updatedCount++;
+        } else {
+          // Add new guest
+          newGuestsToAdd.push(importGuest);
+          newCount++;
+        }
+      });
+
+      const finalGuests = [...guestsCopy, ...newGuestsToAdd];
+      updateLocalStorage(finalGuests);
+      return finalGuests;
+    });
+    
+    return { updatedCount, newCount };
+  };
+
+
   return (
-    <GuestContext.Provider value={{ allGuests, loading, addGuests, updateGuest }}>
+    <GuestContext.Provider value={{ allGuests, loading, addGuests, updateGuest, updateOrAddGuests }}>
       {children}
     </GuestContext.Provider>
   );
