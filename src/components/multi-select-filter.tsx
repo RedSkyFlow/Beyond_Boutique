@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from './ui/button';
 import type { LucideIcon } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
+import { Separator } from './ui/separator';
 
 interface MultiSelectFilterProps {
   id?: string;
@@ -33,6 +34,7 @@ export function MultiSelectFilter({
   className,
 }: MultiSelectFilterProps) {
   const [open, setOpen] = React.useState(false);
+  const allValues = options.map(o => o.value);
 
   const handleSelect = (value: string) => {
     const newSelectedValues = selectedValues.includes(value)
@@ -40,6 +42,20 @@ export function MultiSelectFilter({
       : [...selectedValues, value];
     onChange(newSelectedValues);
   };
+
+  const handleSelectOnly = (value: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange([value]);
+  }
+  
+  const handleToggleAll = () => {
+    if (selectedValues.length === allValues.length) {
+      onChange([]); // Clear selection
+    } else {
+      onChange(allValues); // Select all
+    }
+  }
+
 
   return (
     <div id={id} className={className}>
@@ -84,6 +100,17 @@ export function MultiSelectFilter({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[240px] p-0" align="start">
+          <div className="p-2">
+             <Button 
+                variant="ghost" 
+                size="sm" 
+                className="w-full justify-start h-8 text-xs"
+                onClick={handleToggleAll}
+            >
+                {selectedValues.length === allValues.length ? 'Clear Selection' : 'Select All'}
+             </Button>
+          </div>
+          <Separator />
           <ScrollArea className="max-h-60">
             <div className="p-1">
               {options.map((option) => {
@@ -92,7 +119,7 @@ export function MultiSelectFilter({
                   <div
                     key={option.value}
                     onClick={() => handleSelect(option.value)}
-                    className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
+                    className="relative group flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                   >
                     <div
                       className={cn(
@@ -104,7 +131,15 @@ export function MultiSelectFilter({
                     >
                       <Check className={cn('h-4 w-4')} />
                     </div>
-                    <span>{option.label}</span>
+                    <span className="flex-1">{option.label}</span>
+                    <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="absolute right-1 h-6 px-2 text-muted-foreground opacity-0 group-hover:opacity-100"
+                        onClick={(e) => handleSelectOnly(option.value, e)}
+                    >
+                        only
+                    </Button>
                   </div>
                 );
               })}
