@@ -65,7 +65,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
         <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
-              <Calendar className="h-5 w-5 text-primary" />
+              <Calendar className="h-5 w-5 text-accent-foreground" />
               {guest.status === 'Arriving Soon' ? 'Upcoming Stay' : 'Current Stay'}
             </CardTitle>
             {currentStay && <CardDescription>{currentStay.hotelName}</CardDescription>}
@@ -103,7 +103,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
         <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
-              <Wifi className="h-5 w-5 text-primary" />
+              <Wifi className="h-5 w-5 text-accent-foreground" />
               On-Site Activity
             </CardTitle>
             <CardDescription>Purple WiFi Analytics</CardDescription>
@@ -112,7 +112,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
             <p><span className="font-semibold">First Seen:</span> {guest.onSiteActivity.firstSeen}</p>
             <p><span className="font-semibold">Last Seen:</span> {guest.onSiteActivity.lastSeen}</p>
             <div className="flex items-start gap-2 pt-1">
-              <Smartphone className="h-4 w-4 mt-0.5 text-primary"/>
+              <Smartphone className="h-4 w-4 mt-0.5 text-accent-foreground"/>
               <div>
                 <p className="font-semibold">Connected Devices:</p>
                 <ul className="list-disc pl-5 text-muted-foreground">
@@ -125,7 +125,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
             </div>
             {guest.onSiteActivity.venuesVisited && guest.onSiteActivity.venuesVisited.length > 0 && (
               <div className="flex items-start gap-2 pt-1">
-                <Building className="h-4 w-4 mt-0.5 text-primary"/>
+                <Building className="h-4 w-4 mt-0.5 text-accent-foreground"/>
                 <div>
                   <p className="font-semibold">Venues Visited:</p>
                   <ul className="list-disc pl-5 text-muted-foreground">
@@ -143,7 +143,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
         <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
-              <UserPlus className="h-5 w-5 text-primary" />
+              <UserPlus className="h-5 w-5 text-accent-foreground" />
               Guest Preferences
             </CardTitle>
           </CardHeader>
@@ -161,7 +161,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
         <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
-              <History className="h-5 w-5 text-primary" />
+              <History className="h-5 w-5 text-accent-foreground" />
               Stay History
             </CardTitle>
           </CardHeader>
@@ -170,7 +170,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
               <div className="space-y-4">
                 {guest.stayHistory.slice().reverse().map((stay, index) => (
                     <div key={index} className="flex items-start gap-4 text-sm">
-                      <Building className="h-5 w-5 mt-0.5 shrink-0 text-primary" />
+                      <Building className="h-5 w-5 mt-0.5 shrink-0 text-accent-foreground" />
                       <div className="flex-1">
                         <p className="font-semibold">{stay.hotelName}</p>
                         <p className="text-muted-foreground">
@@ -192,7 +192,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
         <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
-              <MessageSquare className="h-5 w-5 text-primary" />
+              <MessageSquare className="h-5 w-5 text-accent-foreground" />
               Guest Feedback
             </CardTitle>
           </CardHeader>
@@ -230,7 +230,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
         <Card className="shadow-soft w-full h-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-xl">
-              <History className="h-5 w-5 text-primary" />
+              <History className="h-5 w-5 text-accent-foreground" />
               Communication History
             </CardTitle>
           </CardHeader>
@@ -275,16 +275,16 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
              </div>
             <div className="flex flex-wrap items-center text-sm text-muted-foreground mt-2 gap-x-6 gap-y-2">
               <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-primary" />
+                <Mail className="h-4 w-4 text-accent-foreground" />
                 <span>{guest.email}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-primary" />
+                <Phone className="h-4 w-4 text-accent-foreground" />
                 <span>{guest.phone}</span>
               </div>
               {guest.homeTown && (
                   <div className="flex items-center gap-2">
-                      <Home className="h-4 w-4 text-primary" />
+                      <Home className="h-4 w-4 text-accent-foreground" />
                       <span>{guest.homeTown}</span>
                   </div>
               )}
@@ -292,39 +292,39 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm">
               {guest.totalStays > 0 && (
                 <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-primary" />
+                  <User className="h-4 w-4 text-accent-foreground" />
                   <span>{guest.totalStays} {guest.totalStays === 1 ? 'Stay' : 'Stays'}</span>
                 </div>
               )}
               <div className="flex items-center gap-2">
-                <Award className="h-4 w-4 text-primary" />
+                <Award className="h-4 w-4 text-accent-foreground" />
                 <span>Loyalty Tier: {guest.loyaltyTier}</span>
               </div>
                <div className="flex items-center gap-2">
-                <Package className="h-4 w-4 text-primary" />
+                <Package className="h-4 w-4 text-accent-foreground" />
                 <span>Origin: {guestSource.label}</span>
               </div>
                {guest.language && (
                   <div className="flex items-center gap-2">
-                      <Languages className="h-4 w-4 text-primary" />
+                      <Languages className="h-4 w-4 text-accent-foreground" />
                       <span>{guest.language}</span>
                   </div>
               )}
                {guest.occupation && (
                   <div className="flex items-center gap-2">
-                      <Briefcase className="h-4 w-4 text-primary" />
+                      <Briefcase className="h-4 w-4 text-accent-foreground" />
                       <span>{guest.occupation}</span>
                   </div>
               )}
               {guest.age && (
                   <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-primary" />
+                      <User className="h-4 w-4 text-accent-foreground" />
                       <span>{guest.age} years old</span>
                   </div>
               )}
               {guest.gender && (
                 <div className="flex items-center gap-2">
-                  <VenetianMask className="h-4 w-4 text-primary" />
+                  <VenetianMask className="h-4 w-4 text-accent-foreground" />
                   <span>{guest.gender}</span>
                 </div>
               )}
