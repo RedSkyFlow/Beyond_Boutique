@@ -5,7 +5,7 @@ import type { Guest, GuestStatus, GuestSource, LoyaltyTier, Filters } from '@/ty
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Search, SlidersHorizontal, BedDouble, User, Building, HelpCircle, Upload, Database, FileText, UserPlus, Wifi, Briefcase, Award, Package } from 'lucide-react';
+import { Search, SlidersHorizontal, BedDouble, User, Building, HelpCircle, Upload, Database, FileText, UserPlus, Wifi, Briefcase, Award, Package, Hotel } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import type { LucideIcon } from 'lucide-react';
@@ -33,10 +33,10 @@ interface GuestListProps {
 }
 
 const statusConfig: Record<GuestStatus, { label: string; className: string; }> = {
-  'Checked-in': { label: 'Checked-in', className: 'bg-green-100 text-green-800' },
-  'Arriving Soon': { label: 'Arriving Soon', className: 'bg-yellow-100 text-yellow-800' },
-  'Checked-out': { label: 'Checked-out', className: 'bg-gray-100 text-gray-800' },
-  'Prospect': { label: 'Prospect', className: 'bg-blue-100 text-blue-800' },
+  'Checked-in': { label: 'Checked-in', className: 'bg-green-100 text-green-800 border-green-200' },
+  'Arriving Soon': { label: 'Arriving Soon', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+  'Checked-out': { label: 'Checked-out', className: 'bg-gray-100 text-gray-800 border-gray-200' },
+  'Prospect': { label: 'Prospect', className: 'bg-blue-100 text-blue-800 border-blue-200' },
 };
 
 const sourceConfig: Record<GuestSource, { label: string; icon: LucideIcon }> = {
@@ -71,11 +71,14 @@ export function GuestList({
     <div className="flex flex-col h-full bg-card border-r w-full md:w-[350px]">
       <div className="p-4 space-y-4 border-b">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight">The Last Word</h1>
+            <div className="flex items-center gap-3">
+              <Hotel className="h-8 w-8 text-primary-foreground bg-primary p-1.5 rounded-lg" />
+              <h1 className="text-2xl font-bold tracking-tight font-headline">Boutique CRM</h1>
+            </div>
            <div className="flex items-center gap-1">
             <Button variant="outline" size="sm" className="h-8" onClick={onImportClick}>
               <Upload className="h-4 w-4 mr-2"/>
-              Import Data
+              Import
             </Button>
             <TooltipProvider>
               <Tooltip>
@@ -107,7 +110,7 @@ export function GuestList({
                         <SlidersHorizontal className="h-4 w-4 mr-2" />
                         Filter
                         {activeFilterCount > 0 && (
-                            <Badge variant="secondary" className="absolute -top-2 -right-2 h-5 w-5 justify-center p-0 rounded-full">
+                            <Badge variant="secondary" className="absolute -top-2 -right-2 h-5 w-5 justify-center p-0 rounded-full bg-accent text-accent-foreground">
                                 {activeFilterCount}
                             </Badge>
                         )}
@@ -179,8 +182,8 @@ export function GuestList({
                 className={cn(
                   'w-full text-left p-3 rounded-lg flex flex-col gap-1 transition-colors',
                   selectedGuestId === guest.id
-                    ? 'bg-secondary'
-                    : 'hover:bg-secondary/50'
+                    ? 'bg-primary/50'
+                    : 'hover:bg-primary/20'
                 )}
               >
                 <div className="flex items-center justify-between">
@@ -199,7 +202,7 @@ export function GuestList({
                       </Tooltip>
                     </TooltipProvider>
                   </div>
-                  <div className={cn('px-2 py-0.5 text-xs font-medium rounded-full', guestStatus.className)}>
+                  <div className={cn('px-2 py-0.5 text-xs font-medium rounded-full border', guestStatus.className)}>
                     {guestStatus.label}
                   </div>
                 </div>
@@ -207,7 +210,7 @@ export function GuestList({
                   <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                     <div className='flex items-center gap-1.5'>
                       <BedDouble className="h-3.5 w-3.5" />
-                      <span>Room {latestStay.room}</span>
+                      <span>Room {latestStay.roomNumber}</span>
                     </div>
                      <div className='flex items-center gap-1.5'>
                       <User className="h-3.5 w-3.5" />

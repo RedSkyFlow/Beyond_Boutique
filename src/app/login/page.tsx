@@ -43,15 +43,15 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex items-center justify-center min-h-screen bg-secondary/30 font-body">
-      <Card className="w-full max-w-sm shadow-soft">
+    <main className="flex items-center justify-center min-h-screen bg-background font-body">
+      <Card className="w-full max-w-sm shadow-soft border-primary/20">
         <form onSubmit={handleLogin}>
             <CardHeader className="text-center">
                 <div className="flex justify-center mb-4">
-                    <Hotel className="h-10 w-10 text-primary" />
+                    <Hotel className="h-10 w-10 text-primary-foreground bg-primary p-2 rounded-lg" />
                 </div>
-                <CardTitle className="text-2xl">The Last Word</CardTitle>
-                <CardDescription>Enter your credentials to access the CRM.</CardDescription>
+                <CardTitle className="text-2xl font-headline">Boutique CRM</CardTitle>
+                <CardDescription>Enter your credentials to access the dashboard.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="space-y-2">

@@ -1,18 +1,18 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { Montserrat } from 'next/font/google';
+import { Alegreya } from 'next/font/google';
 import { GuestProvider } from '@/context/guest-context';
 
-const montserrat = Montserrat({
+const alegreya = Alegreya({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-montserrat',
+  variable: '--font-alegreya',
 });
 
 export const metadata: Metadata = {
-  title: 'The Last Word - Beyond Boutique CRM',
-  description: 'A CRM for The Last Word hotels.',
+  title: 'Boutique CRM',
+  description: 'A CRM for boutique hotels.',
 };
 
 export default function RootLayout({
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${montserrat.variable} font-body antialiased`}>
+      <body className={`${alegreya.variable} font-body antialiased`}>
         <GuestProvider>
           {children}
         </GuestProvider>

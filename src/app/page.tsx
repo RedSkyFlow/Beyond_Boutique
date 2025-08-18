@@ -154,7 +154,7 @@ export default function Home() {
 
   return (
     <>
-      <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
+      <main className="h-screen w-screen bg-background flex flex-col font-body">
         <div className="flex flex-1 overflow-hidden h-full">
           <div
             className={cn(
@@ -180,7 +180,7 @@ export default function Home() {
           </div>
           <div
             className={cn(
-              'bg-background flex-1 flex flex-col',
+              'bg-secondary/30 flex-1 flex flex-col',
               'absolute inset-0 md:relative h-full',
               'transition-transform duration-300 ease-in-out md:transform-none',
               {
