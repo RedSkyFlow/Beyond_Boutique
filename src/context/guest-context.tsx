@@ -1,16 +1,20 @@
-
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { Guest } from '@/types';
-import { guests as mockGuests } from '@/lib/mock-data';
+import { db } from '@/lib/firebase';
+import { collection, query, where, onSnapshot, addDoc, updateDoc, doc, Timestamp, writeBatch } from 'firebase/firestore';
+import { useAuth } from './auth-context';
+
+// TODO: In a real app, this would come from the user's assigned hotel or a selector
+const CURRENT_HOTEL_ID = 'last-word-franschhoek';
 
 interface GuestContextType {
   allGuests: Guest[];
   loading: boolean;
-  addGuests: (newGuests: Guest[]) => void;
-  updateGuest: (updatedGuest: Guest) => void;
-  updateOrAddGuests: (guestsFromImport: Guest[]) => { updatedCount: number; newCount: number };
+  addGuests: (newGuests: Guest[]) => Promise<void>;
+  updateGuest: (updatedGuest: Guest) => Promise<void>;
+  updateOrAddGuests: (guestsFromImport: Guest[]) => Promise<{ updatedCount: number; newCount: number }>;
 }
 
 const GuestContext = createContext<GuestContextType | undefined>(undefined);
@@ -18,82 +22,104 @@ const GuestContext = createContext<GuestContextType | undefined>(undefined);
 export function GuestProvider({ children }: { children: ReactNode }) {
   const [allGuests, setAllGuests] = useState<Guest[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
-    try {
-      const storedGuests = localStorage.getItem('allGuests');
-      if (storedGuests) {
-        setAllGuests(JSON.parse(storedGuests));
-      } else {
-        const initialGuests = mockGuests();
-        setAllGuests(initialGuests);
-        localStorage.setItem('allGuests', JSON.stringify(initialGuests));
-      }
-    } catch (error) {
-      console.error("Failed to load guests from localStorage", error);
-      // Fallback to mock data if localStorage fails
-      setAllGuests(mockGuests());
-    } finally {
+    if (!user) {
+      setAllGuests([]);
       setLoading(false);
+      return;
     }
-  }, []);
 
-  const updateLocalStorage = (guests: Guest[]) => {
-    localStorage.setItem('allGuests', JSON.stringify(guests));
+    setLoading(true);
+    const q = query(
+      collection(db, 'guests'),
+      where('hotelId', '==', CURRENT_HOTEL_ID)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const guests: Guest[] = [];
+      snapshot.forEach((doc) => {
+        guests.push({ id: doc.id, ...doc.data() } as Guest);
+      });
+      setAllGuests(guests);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching guests: ", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  const addGuests = async (newGuests: Guest[]) => {
+    const batch = writeBatch(db);
+
+    newGuests.forEach(guest => {
+      const docRef = doc(collection(db, "guests"));
+      batch.set(docRef, {
+        ...guest,
+        hotelId: CURRENT_HOTEL_ID,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now()
+      });
+    });
+
+    await batch.commit();
   };
 
-  const addGuests = (newGuests: Guest[]) => {
-    setAllGuests(prevGuests => {
-      const updatedGuests = [...prevGuests, ...newGuests];
-      updateLocalStorage(updatedGuests);
-      return updatedGuests;
+  const updateGuest = async (updatedGuest: Guest) => {
+    if (!updatedGuest.id) return;
+
+    const guestRef = doc(db, 'guests', updatedGuest.id);
+    // Exclude id from the update data
+    const { id, ...data } = updatedGuest;
+
+    await updateDoc(guestRef, {
+      ...data,
+      updatedAt: Timestamp.now()
     });
   };
 
-  const updateGuest = (updatedGuest: Guest) => {
-    setAllGuests(prevGuests => {
-      const updatedGuests = prevGuests.map(g => g.id === updatedGuest.id ? updatedGuest : g);
-      updateLocalStorage(updatedGuests);
-      return updatedGuests;
-    });
-  };
-
-  const updateOrAddGuests = (guestsFromImport: Guest[]) => {
+  const updateOrAddGuests = async (guestsFromImport: Guest[]) => {
     let updatedCount = 0;
     let newCount = 0;
-    const newGuestsToAdd: Guest[] = [];
 
-    setAllGuests(prevGuests => {
-      const guestsCopy = [...prevGuests];
-      const guestMap = new Map(guestsCopy.map(g => [g.email.toLowerCase(), g]));
+    // This is a naive implementation for the prototype. 
+    // In production, this should be a Cloud Function to handle large datasets and avoid client-side complexity.
 
-      guestsFromImport.forEach(importGuest => {
-        const existingGuest = guestMap.get(importGuest.email.toLowerCase());
-        
-        if (existingGuest) {
-          // Update existing guest
-          existingGuest.onSiteActivity = importGuest.onSiteActivity;
-          existingGuest.age = existingGuest.age || importGuest.age;
-          existingGuest.gender = existingGuest.gender || importGuest.gender;
-          existingGuest.dateOfBirth = existingGuest.dateOfBirth || importGuest.dateOfBirth;
-          existingGuest.homeTown = existingGuest.homeTown || importGuest.homeTown;
-          
-          updatedCount++;
-        } else {
-          // Add new guest
-          newGuestsToAdd.push(importGuest);
-          newCount++;
-        }
-      });
+    const batch = writeBatch(db);
+    const guestMap = new Map(allGuests.map(g => [g.email.toLowerCase(), g]));
 
-      const finalGuests = [...guestsCopy, ...newGuestsToAdd];
-      updateLocalStorage(finalGuests);
-      return finalGuests;
-    });
-    
+    for (const importGuest of guestsFromImport) {
+      const existingGuest = guestMap.get(importGuest.email.toLowerCase());
+
+      if (existingGuest) {
+        const guestRef = doc(db, 'guests', existingGuest.id);
+        batch.update(guestRef, {
+          onSiteActivity: importGuest.onSiteActivity,
+          age: existingGuest.age || importGuest.age,
+          gender: existingGuest.gender || importGuest.gender,
+          dateOfBirth: existingGuest.dateOfBirth || importGuest.dateOfBirth,
+          homeTown: existingGuest.homeTown || importGuest.homeTown,
+          updatedAt: Timestamp.now()
+        });
+        updatedCount++;
+      } else {
+        const docRef = doc(collection(db, "guests"));
+        batch.set(docRef, {
+          ...importGuest,
+          hotelId: CURRENT_HOTEL_ID,
+          createdAt: Timestamp.now(),
+          updatedAt: Timestamp.now()
+        });
+        newCount++;
+      }
+    }
+
+    await batch.commit();
     return { updatedCount, newCount };
   };
-
 
   return (
     <GuestContext.Provider value={{ allGuests, loading, addGuests, updateGuest, updateOrAddGuests }}>

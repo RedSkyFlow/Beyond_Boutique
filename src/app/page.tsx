@@ -57,7 +57,7 @@ export default function Home() {
   useEffect(() => {
     setIsClient(true);
     if (!loading && allGuests.length > 0 && window.innerWidth >= 768) {
-        setSelectedGuestId(allGuests[0].id);
+      setSelectedGuestId(allGuests[0].id);
     }
   }, [loading, allGuests]);
 
@@ -67,7 +67,7 @@ export default function Home() {
   ) => {
     setFilters((prevFilters) => ({ ...prevFilters, [filterName]: value }));
   };
-  
+
   const clearAllFilters = () => {
     setFilters({
       search: filters.search, // Keep search term
@@ -86,7 +86,7 @@ export default function Home() {
       const hotelMatch = filters.hotel.length === 0 || guest.stayHistory.some(stay => filters.hotel.includes(stay.hotelName));
       const loyaltyMatch = filters.loyaltyTier.length === 0 || filters.loyaltyTier.includes(guest.loyaltyTier);
       const sourceMatch = filters.source.length === 0 || filters.source.includes(guest.source);
-      
+
       return searchMatch && statusMatch && hotelMatch && loyaltyMatch && sourceMatch;
     });
   }, [allGuests, filters, loading]);
@@ -100,11 +100,8 @@ export default function Home() {
   const handleSelectGuest = (guestId: string) => {
     setSelectedGuestId(guestId);
   };
-  
-  const handleImportGuests = (newGuests: Guest[]) => {
-    addGuests(newGuests);
-    setIsImportOpen(false);
-  };
+
+
 
   const handleEditGuest = (guest: Guest) => {
     setGuestToEdit(guest);
@@ -120,35 +117,35 @@ export default function Home() {
 
   if (!isClient || loading) {
     return (
-        <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
-            <div className="flex-1 grid md:grid-cols-[350px_1fr] overflow-hidden">
-                {/* Skeleton for GuestList */}
-                <div className="flex flex-col h-full bg-card border-r p-4 space-y-4">
-                    <Skeleton className="h-8 w-2/3" />
-                    <Skeleton className="h-10 w-full" />
-                    <div className="grid grid-cols-2 gap-2">
-                        <Skeleton className="h-10 w-full" />
-                        <Skeleton className="h-10 w-full" />
-                    </div>
-                    <div className="space-y-2 pt-2">
-                        <Skeleton className="h-16 w-full" />
-                        <Skeleton className="h-16 w-full" />
-                        <Skeleton className="h-16 w-full" />
-                        <Skeleton className="h-16 w-full" />
-                    </div>
-                </div>
-                {/* Skeleton for GuestDetails */}
-                <div className="hidden md:block p-4 space-y-4">
-                    <Skeleton className="h-32 w-full" />
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <Skeleton className="h-40 w-full" />
-                        <Skeleton className="h-40 w-full" />
-                    </div>
-                    <Skeleton className="h-24 w-full" />
-                    <Skeleton className="h-32 w-full" />
-                </div>
+      <main className="h-screen w-screen bg-secondary/30 flex flex-col font-body">
+        <div className="flex-1 grid md:grid-cols-[350px_1fr] overflow-hidden">
+          {/* Skeleton for GuestList */}
+          <div className="flex flex-col h-full bg-card border-r p-4 space-y-4">
+            <Skeleton className="h-8 w-2/3" />
+            <Skeleton className="h-10 w-full" />
+            <div className="grid grid-cols-2 gap-2">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
             </div>
-        </main>
+            <div className="space-y-2 pt-2">
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+            </div>
+          </div>
+          {/* Skeleton for GuestDetails */}
+          <div className="hidden md:block p-4 space-y-4">
+            <Skeleton className="h-32 w-full" />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <Skeleton className="h-40 w-full" />
+              <Skeleton className="h-40 w-full" />
+            </div>
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-32 w-full" />
+          </div>
+        </div>
+      </main>
     )
   }
 
@@ -191,10 +188,10 @@ export default function Home() {
             id="guest-details-panel"
           >
             {selectedGuest ? (
-              <GuestDetails 
-                guest={selectedGuest} 
+              <GuestDetails
+                guest={selectedGuest}
                 onBack={() => setSelectedGuestId(null)}
-                onEdit={handleEditGuest} 
+                onEdit={handleEditGuest}
               />
             ) : (
               <div className="hidden md:flex items-center justify-center h-full">
@@ -215,17 +212,16 @@ export default function Home() {
         </div>
       </main>
       <AppTour isOpen={isTourOpen} onOpenChange={setIsTourOpen} />
-      <GuestImportDialog 
-        isOpen={isImportOpen} 
+      <GuestImportDialog
+        isOpen={isImportOpen}
         onOpenChange={setIsImportOpen}
-        onImport={handleImportGuests}
       />
       {guestToEdit && (
         <EditGuestDialog
-            isOpen={isEditOpen}
-            onOpenChange={setIsEditOpen}
-            guest={guestToEdit}
-            onSave={handleUpdateGuest}
+          isOpen={isEditOpen}
+          onOpenChange={setIsEditOpen}
+          guest={guestToEdit}
+          onSave={handleUpdateGuest}
         />
       )}
     </>

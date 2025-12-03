@@ -7,6 +7,8 @@ export interface Stay {
   partySize?: number;
   children?: number;
   pets?: boolean;
+  rating?: number;
+  notes?: string;
 }
 
 export type GuestStatus = 'Checked-in' | 'Arriving Soon' | 'Checked-out' | 'Prospect';
@@ -23,8 +25,11 @@ export interface OnSiteActivity {
 }
 
 export interface Communication {
-    date: string;
-    log: string;
+  date: string;
+  log: string;
+  type?: 'Email' | 'SMS' | 'WhatsApp';
+  direction?: 'Inbound' | 'Outbound';
+  summary?: string;
 }
 
 export interface Feedback {
@@ -36,24 +41,34 @@ export interface Feedback {
 
 export interface Guest {
   id: string;
+  hotelId: string; // Added for multi-tenancy
   name: string;
   email: string;
   phone: string;
   status: GuestStatus;
   source: GuestSource;
   totalStays: number;
+  totalSpend?: number; // Added
   loyaltyTier: LoyaltyTier;
   stayHistory: Stay[];
   preferences: string;
-  onSiteActivity: OnSiteActivity;
+  onSiteActivity?: OnSiteActivity; // Kept as object for now, but optional
   communicationHistory: Communication[];
-  feedback: Feedback[];
+  feedback?: Feedback[];
   age?: number;
   occupation?: string;
   homeTown?: string;
   language?: string;
-  gender?: 'Male' | 'Female' | 'Other';
+  gender?: string;
   dateOfBirth?: string;
+  tags?: string[]; // Added
+
+  // Intelligent WiFi fields
+  wifiDeviceId?: string;
+  lastSeenLocation?: string;
+
+  createdAt?: any; // Timestamp
+  updatedAt?: any; // Timestamp
 }
 
 export interface Filters {

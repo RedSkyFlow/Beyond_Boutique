@@ -42,7 +42,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
   ]);
 
   const guestSource = sourceConfig[guest.source];
-  
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -53,7 +53,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
       });
     }
   };
-  
+
   const currentStay = guest.status === 'Checked-in' || guest.status === 'Arriving Soon'
     ? guest.stayHistory[guest.stayHistory.length - 1]
     : null;
@@ -72,27 +72,27 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             {currentStay ? (
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                    <p className="flex items-center gap-2 col-span-2"><span className="font-semibold w-24">Check-in:</span> {currentStay.checkInDate}</p>
-                    <p className="flex items-center gap-2 col-span-2"><span className="font-semibold w-24">Check-out:</span> {currentStay.checkOutDate}</p>
-                    <p className="flex items-center gap-2 col-span-2"><span className="font-semibold w-24">Room:</span> {currentStay.roomNumber}</p>
-                    
-                    {currentStay.partySize !== undefined && (
-                      <p className="flex items-center gap-2 text-muted-foreground"><Users className="h-4 w-4" /> Party of {currentStay.partySize}</p>
-                    )}
-                    {currentStay.children !== undefined && currentStay.children > 0 && (
-                      <p className="flex items-center gap-2 text-muted-foreground"><Baby className="h-4 w-4" /> {currentStay.children} {currentStay.children === 1 ? 'Child' : 'Children'}</p>
-                    )}
-                    {currentStay.pets && (
-                      <p className="flex items-center gap-2 text-muted-foreground"><PawPrint className="h-4 w-4" /> Pet-friendly</p>
-                    )}
-                </div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                <p className="flex items-center gap-2 col-span-2"><span className="font-semibold w-24">Check-in:</span> {currentStay.checkInDate}</p>
+                <p className="flex items-center gap-2 col-span-2"><span className="font-semibold w-24">Check-out:</span> {currentStay.checkOutDate}</p>
+                <p className="flex items-center gap-2 col-span-2"><span className="font-semibold w-24">Room:</span> {currentStay.roomNumber}</p>
+
+                {currentStay.partySize !== undefined && (
+                  <p className="flex items-center gap-2 text-muted-foreground"><Users className="h-4 w-4" /> Party of {currentStay.partySize}</p>
+                )}
+                {currentStay.children !== undefined && currentStay.children > 0 && (
+                  <p className="flex items-center gap-2 text-muted-foreground"><Baby className="h-4 w-4" /> {currentStay.children} {currentStay.children === 1 ? 'Child' : 'Children'}</p>
+                )}
+                {currentStay.pets && (
+                  <p className="flex items-center gap-2 text-muted-foreground"><PawPrint className="h-4 w-4" /> Pet-friendly</p>
+                )}
+              </div>
             ) : (
-                <p className="text-sm text-muted-foreground">
-                  {guest.status === 'Prospect' 
-                    ? 'This prospect has not stayed with us yet.'
-                    : 'No current or upcoming stay information.'}
-                </p>
+              <p className="text-sm text-muted-foreground">
+                {guest.status === 'Prospect'
+                  ? 'This prospect has not stayed with us yet.'
+                  : 'No current or upcoming stay information.'}
+              </p>
             )}
           </CardContent>
         </Card>
@@ -109,30 +109,36 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
             <CardDescription>Purple WiFi Analytics</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <p><span className="font-semibold">First Seen:</span> {guest.onSiteActivity.firstSeen}</p>
-            <p><span className="font-semibold">Last Seen:</span> {guest.onSiteActivity.lastSeen}</p>
-            <div className="flex items-start gap-2 pt-1">
-              <Smartphone className="h-4 w-4 mt-0.5 text-accent-foreground"/>
-              <div>
-                <p className="font-semibold">Connected Devices:</p>
-                <ul className="list-disc pl-5 text-muted-foreground">
-                  {guest.onSiteActivity.connectedDevices.length > 0 ? 
-                    guest.onSiteActivity.connectedDevices.map((device, index) => <li key={`${device}-${index}`}>{device}</li>)
-                    : <li>None</li>
-                  }
-                </ul>
-              </div>
-            </div>
-            {guest.onSiteActivity.venuesVisited && guest.onSiteActivity.venuesVisited.length > 0 && (
-              <div className="flex items-start gap-2 pt-1">
-                <Building className="h-4 w-4 mt-0.5 text-accent-foreground"/>
-                <div>
-                  <p className="font-semibold">Venues Visited:</p>
-                  <ul className="list-disc pl-5 text-muted-foreground">
-                    {guest.onSiteActivity.venuesVisited.map((venue, index) => <li key={`${venue}-${index}`}>{venue}</li>)}
-                  </ul>
+            {guest.onSiteActivity ? (
+              <>
+                <p><span className="font-semibold">First Seen:</span> {guest.onSiteActivity.firstSeen}</p>
+                <p><span className="font-semibold">Last Seen:</span> {guest.onSiteActivity.lastSeen}</p>
+                <div className="flex items-start gap-2 pt-1">
+                  <Smartphone className="h-4 w-4 mt-0.5 text-accent-foreground" />
+                  <div>
+                    <p className="font-semibold">Connected Devices:</p>
+                    <ul className="list-disc pl-5 text-muted-foreground">
+                      {guest.onSiteActivity.connectedDevices.length > 0 ?
+                        guest.onSiteActivity.connectedDevices.map((device, index) => <li key={`${device}-${index}`}>{device}</li>)
+                        : <li>None</li>
+                      }
+                    </ul>
+                  </div>
                 </div>
-              </div>
+                {guest.onSiteActivity.venuesVisited && guest.onSiteActivity.venuesVisited.length > 0 && (
+                  <div className="flex items-start gap-2 pt-1">
+                    <Building className="h-4 w-4 mt-0.5 text-accent-foreground" />
+                    <div>
+                      <p className="font-semibold">Venues Visited:</p>
+                      <ul className="list-disc pl-5 text-muted-foreground">
+                        {guest.onSiteActivity.venuesVisited.map((venue, index) => <li key={`${venue}-${index}`}>{venue}</li>)}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="text-muted-foreground">No on-site activity recorded.</p>
             )}
           </CardContent>
         </Card>
@@ -169,15 +175,15 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
             {guest.stayHistory.length > 0 ? (
               <div className="space-y-4">
                 {guest.stayHistory.slice().reverse().map((stay, index) => (
-                    <div key={index} className="flex items-start gap-4 text-sm">
-                      <Building className="h-5 w-5 mt-0.5 shrink-0 text-accent-foreground" />
-                      <div className="flex-1">
-                        <p className="font-semibold">{stay.hotelName}</p>
-                        <p className="text-muted-foreground">
-                          {stay.checkInDate} to {stay.checkOutDate} &middot; Room {stay.roomNumber}
-                        </p>
-                      </div>
+                  <div key={index} className="flex items-start gap-4 text-sm">
+                    <Building className="h-5 w-5 mt-0.5 shrink-0 text-accent-foreground" />
+                    <div className="flex-1">
+                      <p className="font-semibold">{stay.hotelName}</p>
+                      <p className="text-muted-foreground">
+                        {stay.checkInDate} to {stay.checkOutDate} &middot; Room {stay.roomNumber}
+                      </p>
                     </div>
+                  </div>
                 ))}
               </div>
             ) : (
@@ -260,19 +266,19 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
       <div className="p-4 border-b bg-background">
         <Card className="shadow-soft">
           <CardHeader>
-             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <Button variant="ghost" size="icon" className="md:hidden h-8 w-8" onClick={onBack}>
-                    <ArrowLeft className="h-5 w-5" />
-                    <span className="sr-only">Back</span>
-                  </Button>
-                  <CardTitle className="text-3xl font-bold">{guest.name}</CardTitle>
-                </div>
-                <Button variant="outline" size="sm" onClick={() => onEdit(guest)}>
-                    <Pencil className="h-4 w-4 mr-2" />
-                    Edit Guest
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Button variant="ghost" size="icon" className="md:hidden h-8 w-8" onClick={onBack}>
+                  <ArrowLeft className="h-5 w-5" />
+                  <span className="sr-only">Back</span>
                 </Button>
-             </div>
+                <CardTitle className="text-3xl font-bold">{guest.name}</CardTitle>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => onEdit(guest)}>
+                <Pencil className="h-4 w-4 mr-2" />
+                Edit Guest
+              </Button>
+            </div>
             <div className="flex flex-wrap items-center text-sm text-muted-foreground mt-2 gap-x-6 gap-y-2">
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-accent-foreground" />
@@ -283,10 +289,10 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
                 <span>{guest.phone}</span>
               </div>
               {guest.homeTown && (
-                  <div className="flex items-center gap-2">
-                      <Home className="h-4 w-4 text-accent-foreground" />
-                      <span>{guest.homeTown}</span>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Home className="h-4 w-4 text-accent-foreground" />
+                  <span>{guest.homeTown}</span>
+                </div>
               )}
             </div>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm">
@@ -300,27 +306,27 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
                 <Award className="h-4 w-4 text-accent-foreground" />
                 <span>Loyalty Tier: {guest.loyaltyTier}</span>
               </div>
-               <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <Package className="h-4 w-4 text-accent-foreground" />
                 <span>Origin: {guestSource.label}</span>
               </div>
-               {guest.language && (
-                  <div className="flex items-center gap-2">
-                      <Languages className="h-4 w-4 text-accent-foreground" />
-                      <span>{guest.language}</span>
-                  </div>
+              {guest.language && (
+                <div className="flex items-center gap-2">
+                  <Languages className="h-4 w-4 text-accent-foreground" />
+                  <span>{guest.language}</span>
+                </div>
               )}
-               {guest.occupation && (
-                  <div className="flex items-center gap-2">
-                      <Briefcase className="h-4 w-4 text-accent-foreground" />
-                      <span>{guest.occupation}</span>
-                  </div>
+              {guest.occupation && (
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-accent-foreground" />
+                  <span>{guest.occupation}</span>
+                </div>
               )}
               {guest.age && (
-                  <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-accent-foreground" />
-                      <span>{guest.age} years old</span>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4 text-accent-foreground" />
+                  <span>{guest.age} years old</span>
+                </div>
               )}
               {guest.gender && (
                 <div className="flex items-center gap-2">
@@ -332,7 +338,7 @@ export function GuestDetails({ guest, onBack, onEdit }: GuestDetailsProps) {
           </CardHeader>
         </Card>
       </div>
-      
+
       <ScrollArea className="flex-1 h-full">
         <div className="p-4">
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

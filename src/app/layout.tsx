@@ -1,8 +1,9 @@
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { Alegreya } from 'next/font/google';
 import { GuestProvider } from '@/context/guest-context';
+import { AuthProvider } from '@/context/auth-context';
 
 const alegreya = Alegreya({
   subsets: ['latin'],
@@ -22,10 +23,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${alegreya.variable} font-body antialiased`}>
-        <GuestProvider>
-          {children}
-        </GuestProvider>
+      <body className={`${alegreya.variable} font-body antialiased`} suppressHydrationWarning>
+        <AuthProvider>
+          <GuestProvider>
+            {children}
+          </GuestProvider>
+        </AuthProvider>
         <Toaster />
       </body>
     </html>
