@@ -6,9 +6,6 @@ import { db } from '@/lib/firebase';
 import { collection, query, where, onSnapshot, addDoc, updateDoc, doc, Timestamp, writeBatch } from 'firebase/firestore';
 import { useAuth } from './auth-context';
 
-// TODO: In a real app, this would come from the user's assigned hotel or a selector
-const CURRENT_HOTEL_ID = 'last-word-franschhoek';
-
 interface GuestContextType {
   allGuests: Guest[];
   loading: boolean;
@@ -22,10 +19,10 @@ const GuestContext = createContext<GuestContextType | undefined>(undefined);
 export function GuestProvider({ children }: { children: ReactNode }) {
   const [allGuests, setAllGuests] = useState<Guest[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, hotelId } = useAuth();
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !hotelId) {
       setAllGuests([]);
       setLoading(false);
       return;
@@ -34,7 +31,7 @@ export function GuestProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     const q = query(
       collection(db, 'guests'),
-      where('hotelId', '==', CURRENT_HOTEL_ID)
+      where('hotelId', '==', hotelId)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -50,7 +47,7 @@ export function GuestProvider({ children }: { children: ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, [user, hotelId]);
 
   const addGuests = async (newGuests: Guest[]) => {
     const batch = writeBatch(db);
@@ -59,7 +56,7 @@ export function GuestProvider({ children }: { children: ReactNode }) {
       const docRef = doc(collection(db, "guests"));
       batch.set(docRef, {
         ...guest,
-        hotelId: CURRENT_HOTEL_ID,
+        hotelId: hotelId || 'last-word-franschhoek',
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now()
       });
@@ -109,7 +106,7 @@ export function GuestProvider({ children }: { children: ReactNode }) {
         const docRef = doc(collection(db, "guests"));
         batch.set(docRef, {
           ...importGuest,
-          hotelId: CURRENT_HOTEL_ID,
+          hotelId: hotelId || 'last-word-franschhoek',
           createdAt: Timestamp.now(),
           updatedAt: Timestamp.now()
         });

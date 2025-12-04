@@ -13,6 +13,7 @@ import { EditGuestDialog } from '@/components/edit-guest-dialog';
 import type { Filters } from '@/types';
 import { cn } from '@/lib/utils';
 import { useGuestContext } from '@/context/guest-context';
+import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'next/navigation';
 
 
@@ -31,14 +32,14 @@ const sources: GuestSource[] = ['PANstrat', 'Booking.com', 'Manual Entry', 'Purp
 
 export default function Home() {
   const { allGuests, loading, addGuests, updateGuest } = useGuestContext();
+  const { user, loading: authLoading, signOut } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    if (!isAuthenticated) {
+    if (!authLoading && !user) {
       router.push('/login');
     }
-  }, [router]);
+  }, [user, authLoading, router]);
 
   const [selectedGuestId, setSelectedGuestId] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filters>({
@@ -173,6 +174,9 @@ export default function Home() {
               filterOptions={{ hotels, statuses, loyaltyTiers, sources }}
               onStartTour={() => setIsTourOpen(true)}
               onImportClick={() => setIsImportOpen(true)}
+              onLogout={signOut}
+              userEmail={user?.email}
+              hotelId={hotelId}
             />
           </div>
           <div

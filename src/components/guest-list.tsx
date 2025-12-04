@@ -5,7 +5,7 @@ import type { Guest, GuestStatus, GuestSource, LoyaltyTier, Filters } from '@/ty
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Search, SlidersHorizontal, BedDouble, User, Building, HelpCircle, Upload, Database, FileText, UserPlus, Wifi, Briefcase, Award, Package, Hotel } from 'lucide-react';
+import { Search, SlidersHorizontal, BedDouble, User, Building, HelpCircle, Upload, Database, FileText, UserPlus, Wifi, Briefcase, Award, Package, Hotel, LogOut } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import type { LucideIcon } from 'lucide-react';
@@ -30,6 +30,9 @@ interface GuestListProps {
   };
   onStartTour: () => void;
   onImportClick: () => void;
+  onLogout: () => void;
+  userEmail?: string | null;
+  hotelId?: string | null;
 }
 
 const statusConfig: Record<GuestStatus, { label: string; className: string; }> = {
@@ -58,6 +61,9 @@ export function GuestList({
   filterOptions,
   onStartTour,
   onImportClick,
+  onLogout,
+  userEmail,
+  hotelId,
 }: GuestListProps) {
   const activeFilterCount = Object.values(filters).reduce((count, value) => {
     if (Array.isArray(value) && value.length > 0) {
@@ -71,13 +77,13 @@ export function GuestList({
     <div className="flex flex-col h-full bg-card border-r w-full md:w-[350px]">
       <div className="p-4 space-y-4 border-b">
         <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Hotel className="h-8 w-8 text-primary-foreground bg-primary p-1.5 rounded-lg" />
-              <h1 className="text-2xl font-bold tracking-tight font-headline">Beyond Boutique</h1>
-            </div>
-           <div className="flex items-center gap-1">
+          <div className="flex items-center gap-3">
+            <Hotel className="h-8 w-8 text-primary-foreground bg-primary p-1.5 rounded-lg" />
+            <h1 className="text-2xl font-bold tracking-tight font-headline">Beyond Boutique</h1>
+          </div>
+          <div className="flex items-center gap-1">
             <Button variant="outline" size="sm" className="h-8" onClick={onImportClick}>
-              <Upload className="h-4 w-4 mr-2"/>
+              <Upload className="h-4 w-4 mr-2" />
               Import
             </Button>
             <TooltipProvider>
@@ -92,90 +98,110 @@ export function GuestList({
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-           </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" onClick={onLogout} className="h-8 w-8">
+                    <LogOut className="h-5 w-5 text-muted-foreground" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Log out</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
+        <div className="flex flex-col space-y-1">
+          {userEmail && <span className="text-xs text-muted-foreground truncate" title={userEmail}>{userEmail}</span>}
+          {hotelId && (
+            <Badge variant="outline" className="w-fit text-[10px] font-normal py-0 h-5 border-primary/20 text-primary bg-primary/5">
+              {hotelId}
+            </Badge>
+          )}
         </div>
         <div className="flex items-center gap-2">
-            <div className="relative flex-1" id="search-bar">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search guests..."
-                className="pl-9 h-10"
-                value={filters.search}
-                onChange={(e) => onFilterChange('search', e.target.value)}
-              />
-            </div>
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button variant="outline" className="h-10 relative" id="filter-popover-trigger">
-                        <SlidersHorizontal className="h-4 w-4 mr-2" />
-                        Filter
-                        {activeFilterCount > 0 && (
-                            <Badge variant="secondary" className="absolute -top-2 -right-2 h-5 w-5 justify-center p-0 rounded-full bg-accent text-accent-foreground">
-                                {activeFilterCount}
-                            </Badge>
-                        )}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[280px] p-4 space-y-4" align="end">
-                    <div className="flex items-center justify-between">
-                        <h4 className="font-medium">Filter Guests</h4>
-                        <Button variant="link" size="sm" className="p-0 h-auto" onClick={onClearFilters}>Clear all</Button>
-                    </div>
-                    <div className="space-y-4">
-                        <div>
-                            <Label>Hotel</Label>
-                             <MultiSelectFilter
-                              id="hotel-filter"
-                              placeholder="Select hotels..."
-                              options={filterOptions.hotels.map(h => ({ value: h, label: h.replace('Last Word ', '') }))}
-                              selectedValues={filters.hotel}
-                              onChange={(values) => onFilterChange('hotel', values)}
-                            />
-                        </div>
-                         <div>
-                            <Label>Status</Label>
-                            <MultiSelectFilter
-                              id="status-filter"
-                              placeholder="Select statuses..."
-                              options={filterOptions.statuses.map(s => ({ value: s, label: s }))}
-                              selectedValues={filters.status}
-                              onChange={(values) => onFilterChange('status', values)}
-                            />
-                        </div>
-                         <Separator />
-                         <div>
-                            <Label>Loyalty Tier</Label>
-                             <MultiSelectFilter
-                              id="loyalty-filter"
-                              placeholder="Select tiers..."
-                              options={filterOptions.loyaltyTiers.map(t => ({ value: t, label: t }))}
-                              selectedValues={filters.loyaltyTier}
-                              onChange={(values) => onFilterChange('loyaltyTier', values)}
-                            />
-                        </div>
-                         <div>
-                            <Label>Source</Label>
-                            <MultiSelectFilter
-                              id="source-filter"
-                              placeholder="Select sources..."
-                              options={filterOptions.sources.map(s => ({ value: s, label: s }))}
-                              selectedValues={filters.source}
-                              onChange={(values) => onFilterChange('source', values)}
-                            />
-                        </div>
-                    </div>
-                </PopoverContent>
-            </Popover>
+          <div className="relative flex-1" id="search-bar">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search guests..."
+              className="pl-9 h-10"
+              value={filters.search}
+              onChange={(e) => onFilterChange('search', e.target.value)}
+            />
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="h-10 relative" id="filter-popover-trigger">
+                <SlidersHorizontal className="h-4 w-4 mr-2" />
+                Filter
+                {activeFilterCount > 0 && (
+                  <Badge variant="secondary" className="absolute -top-2 -right-2 h-5 w-5 justify-center p-0 rounded-full bg-accent text-accent-foreground">
+                    {activeFilterCount}
+                  </Badge>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[280px] p-4 space-y-4" align="end">
+              <div className="flex items-center justify-between">
+                <h4 className="font-medium">Filter Guests</h4>
+                <Button variant="link" size="sm" className="p-0 h-auto" onClick={onClearFilters}>Clear all</Button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <Label>Hotel</Label>
+                  <MultiSelectFilter
+                    id="hotel-filter"
+                    placeholder="Select hotels..."
+                    options={filterOptions.hotels.map(h => ({ value: h, label: h.replace('Last Word ', '') }))}
+                    selectedValues={filters.hotel}
+                    onChange={(values) => onFilterChange('hotel', values)}
+                  />
+                </div>
+                <div>
+                  <Label>Status</Label>
+                  <MultiSelectFilter
+                    id="status-filter"
+                    placeholder="Select statuses..."
+                    options={filterOptions.statuses.map(s => ({ value: s, label: s }))}
+                    selectedValues={filters.status}
+                    onChange={(values) => onFilterChange('status', values)}
+                  />
+                </div>
+                <Separator />
+                <div>
+                  <Label>Loyalty Tier</Label>
+                  <MultiSelectFilter
+                    id="loyalty-filter"
+                    placeholder="Select tiers..."
+                    options={filterOptions.loyaltyTiers.map(t => ({ value: t, label: t }))}
+                    selectedValues={filters.loyaltyTier}
+                    onChange={(values) => onFilterChange('loyaltyTier', values)}
+                  />
+                </div>
+                <div>
+                  <Label>Source</Label>
+                  <MultiSelectFilter
+                    id="source-filter"
+                    placeholder="Select sources..."
+                    options={filterOptions.sources.map(s => ({ value: s, label: s }))}
+                    selectedValues={filters.source}
+                    onChange={(values) => onFilterChange('source', values)}
+                  />
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
       <ScrollArea className="flex-1">
         <div className="p-2 space-y-1" id="guest-list">
-            {guests.map((guest) => {
-              const latestStay = guest.stayHistory.length > 0 ? guest.stayHistory[guest.stayHistory.length - 1] : null;
-              const guestStatus = statusConfig[guest.status];
-              const guestSource = sourceConfig[guest.source];
-              const SourceIcon = guestSource.icon;
-              return (
+          {guests.map((guest) => {
+            const latestStay = guest.stayHistory.length > 0 ? guest.stayHistory[guest.stayHistory.length - 1] : null;
+            const guestStatus = statusConfig[guest.status];
+            const guestSource = sourceConfig[guest.source];
+            const SourceIcon = guestSource.icon;
+            return (
               <button
                 key={guest.id}
                 onClick={() => onSelectGuest(guest.id)}
@@ -189,7 +215,7 @@ export function GuestList({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <p className="font-semibold">{guest.name}</p>
-                     <TooltipProvider>
+                    <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <span className="flex items-center" onClick={(e) => e.stopPropagation()}>
@@ -209,8 +235,8 @@ export function GuestList({
                 {guest.status !== 'Prospect' && latestStay && (
                   <div className="space-y-1.5 mt-1">
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Building className="h-3.5 w-3.5" />
-                        <span>{latestStay.hotelName}</span>
+                      <Building className="h-3.5 w-3.5" />
+                      <span>{latestStay.hotelName}</span>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <div className='flex items-center gap-1.5'>
@@ -224,13 +250,14 @@ export function GuestList({
                     </div>
                   </div>
                 )}
-                 {guest.status === 'Prospect' && (
+                {guest.status === 'Prospect' && (
                   <div className="mt-1 text-xs text-muted-foreground">
                     <p>No stay history.</p>
                   </div>
                 )}
               </button>
-            )})}
+            )
+          })}
         </div>
       </ScrollArea>
     </div>

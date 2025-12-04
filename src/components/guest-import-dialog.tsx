@@ -214,17 +214,18 @@ export function GuestImportDialog({ isOpen, onOpenChange }: GuestImportDialogPro
     });
 
     if (guestsFromCSV.length > 0) {
+      // Always use updateOrAddGuests to prevent duplicates (checks by email)
+      const { updatedCount, newCount } = await updateOrAddGuests(guestsFromCSV);
+
       if (isDetailedWifiFormat || isSimpleWifiFormat) {
-        const { updatedCount, newCount } = await updateOrAddGuests(guestsFromCSV);
         toast({
           title: "WiFi Data Imported",
           description: `${updatedCount} guest(s) updated and ${newCount} new prospect(s) created.`,
         });
       } else {
-        await addGuests(guestsFromCSV);
         toast({
           title: "Import Successful",
-          description: `${guestsFromCSV.length} guests/prospects have been imported.`,
+          description: `${updatedCount} guest(s) updated and ${newCount} new guest(s) added.`,
         });
       }
       onOpenChange(false);

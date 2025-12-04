@@ -2,9 +2,56 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow read/write access to all documents for authenticated users
-    match /{document=**} {
-      allow read, write: if request.auth != null;
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to get user's assigned hotelId from their profile
+    function getUserHotelId() {
+      let userProfile = get(/databases/$(database)/documents/users/$(request.auth.uid));
+      // If user profile exists and has hotelId, use it
+      if (userProfile != null && userProfile.data.hotelId != null) {
+        return userProfile.data.hotelId;
+      }
+      // Default fallback for users without profiles (MVP compatibility)
+      return 'last-word-franschhoek';
+    }
+    
+    // Guests collection - multi-tenant with hotelId
+    match /guests/{guestId} {
+      // Allow read if user is authenticated and guest belongs to user's hotel
+      allow read: if isAuthenticated() && 
+                     resource.data.hotelId == getUserHotelId();
+      
+      // Allow create if user is authenticated and hotelId matches user's hotel
+      allow create: if isAuthenticated() && 
+                       request.resource.data.hotelId == getUserHotelId() &&
+                       request.resource.data.keys().hasAll(['hotelId', 'name', 'email']);
+      
+      // Allow update if user is authenticated and hotelId matches (and hotelId cannot be changed)
+      allow update: if isAuthenticated() && 
+                       resource.data.hotelId == getUserHotelId() &&
+                       request.resource.data.hotelId == resource.data.hotelId;
+      
+      // Allow delete if user is authenticated and guest belongs to user's hotel
+      allow delete: if isAuthenticated() && 
+                       resource.data.hotelId == getUserHotelId();
+    }
+    
+    // Users collection - for storing user profiles and hotel assignments
+    // TODO: Implement this collection when adding user management
+    match /users/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if false; // Only admins should be able to write user profiles (via Cloud Functions)
+    }
+    
+    // Settings collection - per-hotel configuration
+    // TODO: Implement this collection for hotel-specific settings
+    match /settings/{hotelId} {
+      allow read: if isAuthenticated() && hotelId == getUserHotelId();
+      allow write: if false; // Only admins (via Cloud Functions)
     }
   }
 }
